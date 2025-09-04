@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import httpStatus from 'http-status-codes';
+import { register, login } from '../controllers/authController';
 
 export const createAuthRouter = () => {
     const authRouter = Router();
@@ -14,9 +15,7 @@ export const createAuthRouter = () => {
      *       200:
      *         description: User registered successfully
      */
-    authRouter.post('/register', async (req, res) => {
-        res.status(httpStatus.OK).json({ message: 'registered successfully' });
-    });
+    authRouter.post('/register', register);
 
     /**
      * @swagger
@@ -28,9 +27,7 @@ export const createAuthRouter = () => {
      *       200:
      *         description: User logged in successfully
      */
-    authRouter.post('/login', async (req, res) => {
-        res.status(httpStatus.OK).json({ message: 'Logged in successfully' });
-    });
+    authRouter.post('/login', login);
 
     return authRouter;
 };

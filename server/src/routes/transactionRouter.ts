@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import httpStatus from 'http-status-codes';
+import { createTransaction } from '../controllers/transactionController';
 
 export const createTransactionRouter = () => {
     const transactionRouter = Router();
@@ -14,8 +14,7 @@ export const createTransactionRouter = () => {
      *       200:
      *         description: Transaction created successfully
      */
-    transactionRouter.post('/create', async (req, res) => {
-        res.status(httpStatus.OK).json({ message: 'Transaction created successfully' });
-    });
+    transactionRouter.post('/create', createTransaction);
+
     return transactionRouter;
 };

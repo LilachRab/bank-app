@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import httpStatus from 'http-status-codes';
+import { getUser } from '../controllers/userController';
 
 export const createUserRouter = () => {
     const userRouter = Router();
@@ -14,9 +14,7 @@ export const createUserRouter = () => {
      *       200:
      *         description: User retrieved successfully
      */
-    userRouter.get('/:userName', async (req, res) => {
-        res.status(httpStatus.OK).json({ message: 'Got user name' });
-    });
+    userRouter.get('/:userName', getUser);
 
     return userRouter;
 };

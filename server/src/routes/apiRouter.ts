@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { createTransactionRouter } from './transactionRouter';
 import { createUserRouter } from './userRouter';
+import { protectByToken } from '../middleware/authMiddleware';
 
 export const createApiRouter = () => {
     const apiRouter = Router();
@@ -15,7 +16,7 @@ export const createApiRouter = () => {
      *       200:
      *         description: Transaction created successfully
      */
-    apiRouter.use('/transactions', createTransactionRouter());
+    apiRouter.use('/transactions', protectByToken, createTransactionRouter());
 
     /**
      * @swagger
@@ -27,7 +28,7 @@ export const createApiRouter = () => {
      *       200:
      *         description: User created successfully
      */
-    apiRouter.use('/users', createUserRouter());
+    apiRouter.use('/users', protectByToken, createUserRouter());
 
     return apiRouter;
 };
