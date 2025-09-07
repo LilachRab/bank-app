@@ -1,5 +1,5 @@
 import prisma from '../utils/prismaClient';
-import { CreateUserDto } from '../dtos/user.dto';
+import { UserDto } from '../dtos/user.dto';
 import bcrypt from 'bcryptjs';
 import { BALANCE_MAX, BALANCE_MIN } from '../constants';
 
@@ -15,8 +15,9 @@ const getUserByEmail = (email: string) => {
     });
 };
 
-const createUser = async (userData: CreateUserDto) => {
+const createUser = async (userData: UserDto) => {
     const isUserExists = await prisma.user.findUnique({ where: { email: userData.email } });
+
     if (isUserExists) {
         throw new Error('User already exists');
     }

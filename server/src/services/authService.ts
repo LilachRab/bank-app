@@ -2,9 +2,9 @@ import bcrypt from 'bcryptjs';
 import prisma from '../utils/prismaClient';
 import { User } from '../models/user';
 import { userService } from './userService';
-import { CreateUserDto } from '../dtos/user.dto';
+import { UserDto } from '../dtos/user.dto';
 
-const registerUser = async (userData: CreateUserDto) => {
+const registerUser = async (userData: UserDto) => {
     return userService.createUser(userData);
 };
 

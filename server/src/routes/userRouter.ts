@@ -6,7 +6,7 @@ export const createUserRouter = () => {
 
     /**
      * @swagger
-     * /api/users/:userName:
+     * /api/users/:userEmail:
      *   get:
      *     summary: Get a user
      *     tags: [Users]
@@ -14,7 +14,7 @@ export const createUserRouter = () => {
      *       200:
      *         description: User retrieved successfully
      */
-    userRouter.get('/:userName', getUser);
+    userRouter.get('/:userEmail', getUser);
 
     return userRouter;
 };
