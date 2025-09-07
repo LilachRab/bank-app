@@ -137,3 +137,14 @@ dist
 # Vite logs files
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
+
+# prisma
+server/src/generated/prisma
+
+# gitignore
+.gitignore
+
+# package-lock.json
+package-lock.json
+package.json
+jest.config.js
