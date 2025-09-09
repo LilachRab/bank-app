@@ -18,7 +18,7 @@ describe('Test API Routes', () => {
             ],
         });
         // Generate a token for the sender
-        senderToken = jwtService.generateToken({ email: senderEmail });
+        senderToken = jwtService.generateToken(senderEmail);
     });
 
     afterAll(async () => {
@@ -56,7 +56,7 @@ describe('Test API Routes', () => {
         it('Should return 404 for a non-existent user', async () => {
             const res = await request(app)
                 .get('/api/users/nonexistentuser@example.com')
-                .set('Authorization', `Bearer ${jwtService.generateToken({ email: 'nonexistentuser@example.com' })}`);
+                .set('Authorization', `Bearer ${jwtService.generateToken('nonexistentuser@example.com')}`);
 
             expect(res.statusCode).toEqual(httpStatus.NOT_FOUND);
         });

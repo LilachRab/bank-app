@@ -18,6 +18,6 @@ export const login = async (req: Request, res: Response) => {
         return res.status(httpStatus.UNAUTHORIZED).json({ message: 'Invalid credentials' });
     }
 
-    const token = jwtService.generateToken({ email: user.email });
+    const token = jwtService.generateToken(user.email);
     res.status(httpStatus.OK).json({ token });
 };

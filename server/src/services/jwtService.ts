@@ -1,8 +1,8 @@
 import jwt from 'jsonwebtoken';
-import { config } from '../config/config';
+import { config } from '../config';
 
-const generateToken = (payload: object): string => {
-    return jwt.sign(payload, config.jwtSecret, {
+const generateToken = (userEmail: string): string => {
+    return jwt.sign({ email: userEmail }, config.jwtSecret, {
         expiresIn: config.jwtExpiration,
     });
 };
