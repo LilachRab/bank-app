@@ -1,56 +1,34 @@
-import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Logo } from '../components/Logo';
+import { Header } from '@/components/Header';
 import { ArrowRightLeft, SquareChartGantt } from 'lucide-react';
-import { ThemeToggle } from '@/components/ThemeToggle';
-import {
-    Dialog,
-    DialogTrigger,
-    DialogContent,
-    DialogHeader,
-    DialogTitle,
-    DialogDescription,
-} from '@/components/ui/dialog';
+import { LegalDialogs } from '@/components/LegalDialogs';
+import { purpleGradientBG } from '@/constants';
+import { Button } from '@/components/ui/button';
 
 export const Home = () => {
-    const purpleGradientBG = 'linear-gradient(90deg, #2E2355 0%, #654DBB 100%)';
-
-    const [showTerms, setShowTerms] = useState(false);
-    const [showPrivacy, setShowPrivacy] = useState(false);
-
     return (
         <div className="min-h-screen flex flex-col bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-100">
-            {/* Header */}
-            <header className="bg-white/80 dark:bg-gray-900/70 backdrop-blur supports-[backdrop-filter]:bg-white/60 shadow-sm">
-                <div className="w-full px-3 sm:px-4 md:px-6 py-3 flex items-center justify-between">
-                    {/* Logo left */}
-                    <div className="flex items-center">
-                        <Logo height={60} />
-                    </div>
-
-                    {/* Right controls */}
-                    <div className="flex items-center gap-3">
-                        <ThemeToggle />
-
-                        {/* Sign in */}
+            <Header
+                rightContent={
+                    <>
                         <Link
                             to="/signin"
                             className="px-4 py-2 text-sm font-medium hover:font-semibold text-gray-700 hover:text-gray-900 dark:text-gray-200 dark:hover:text-white"
                         >
                             Sign in
                         </Link>
-
-                        {/* Open account (uses signup gradient) */}
-                        <Link
-                            to="/signup"
-                            className="px-4 py-2 text-[15px] font-semibold text-white rounded-xl shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 transition-all duration-200 hover:shadow-xl hover:-translate-y-0.5 hover:opacity-95"
-                            style={{ background: purpleGradientBG }}
-                        >
-                            Open Account
-                        </Link>
-                    </div>
-                </div>
-            </header>
+                        <Button asChild className="transform transition-transform hover:scale-105">
+                            <Link
+                                to="/signup"
+                                className="px-4 py-2 text-[15px] font-semibold text-white"
+                                style={{ background: purpleGradientBG }}
+                            >
+                                Open Account
+                            </Link>
+                        </Button>
+                    </>
+                }
+            />
 
             {/* Hero */}
             <main className="flex-grow">
@@ -60,12 +38,12 @@ export const Home = () => {
                         <p className="text-white/70 text-lg md:text-xl mb-10 max-w-3xl mx-auto">
                             Simplified banking designed for you. Secure, straightforward, and always available.
                         </p>
-                        <Link
-                            to="/signup"
-                            className="inline-block bg-white text-[#2E2355] px-8 py-4 rounded-xl font-bold text-lg hover:bg-gray-100 transition"
+                        <Button
+                            asChild
+                            className="bg-white text-[#2E2355] px-10 py-5 font-bold text-xl hover:bg-gray-100 shadow-lg transform transition-transform hover:scale-105"
                         >
-                            Get Started
-                        </Link>
+                            <Link to="/signup">Get Started</Link>
+                        </Button>
                     </div>
                 </section>
 
@@ -106,48 +84,7 @@ export const Home = () => {
                     <div className="flex flex-col md:flex-row justify-between items-center text-center md:text-left">
                         <p className="text-gray-500 dark:text-gray-400">© 2025 Purple Bank. All rights reserved.</p>
                         <div className="flex space-x-6 mt-4 md:mt-0">
-                            <Dialog open={showPrivacy} onOpenChange={setShowPrivacy}>
-                                <DialogTrigger asChild>
-                                    <button className="text-gray-500 hover:text-black dark:text-gray-400 cursor-pointer">
-                                        Privacy Policy
-                                    </button>
-                                </DialogTrigger>
-                                <DialogContent className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
-                                    <DialogHeader>
-                                        <DialogTitle>Privacy Policy</DialogTitle>
-                                    </DialogHeader>
-                                    <DialogDescription>
-                                        I respect your privacy and am committed to protecting your personal information.
-                                        Any data you share here is stored securely using Neon, and used solely to
-                                        provide and improve my banking services. I do not sell or share your information
-                                        (who cares about fake bank accounts, really) with third parties without your
-                                        consent, except as required by law.
-                                    </DialogDescription>
-                                </DialogContent>
-                            </Dialog>
-
-                            <Dialog open={showTerms} onOpenChange={setShowTerms}>
-                                <DialogTrigger asChild>
-                                    <button className="text-gray-500 hover:text-black dark:text-gray-400 cursor-pointer">
-                                        Terms of Service
-                                    </button>
-                                </DialogTrigger>
-                                <DialogContent className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
-                                    <DialogHeader>
-                                        <DialogTitle>Terms of Service</DialogTitle>
-                                    </DialogHeader>
-                                    <DialogDescription>
-                                        By using my app, you agree to trust a junior full stack developer writing this
-                                        app in collaboration with Cursor. I provide these banking 'services' with care,
-                                        but I am not liable for issues caused by unauthorized access or by an Iranian
-                                        cyber attack. I may update these terms occasionally, and continue add features,
-                                        so use of the app constitutes acceptance of the changes.
-                                        <br />
-                                        <br />
-                                        Good luck!
-                                    </DialogDescription>
-                                </DialogContent>
-                            </Dialog>
+                            <LegalDialogs />
                         </div>
                     </div>
                 </div>

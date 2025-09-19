@@ -1,24 +1,26 @@
-import { useEffect, useMemo, useState } from 'react';
-import blackLogo from '../assets/black-logo.png';
-import whiteLogo from '../assets/white-logo.png';
+import { useTheme } from '@/context/ThemeContext';
+import { Link } from 'react-router-dom';
+import blackLogo from '../assets/black-logo.svg';
+import whiteLogo from '../assets/white-logo.svg';
 
-type LogoProps = {
+interface LogoProps {
+    height: number;
     className?: string;
-    height?: number;
-};
+}
 
-export const Logo = ({ className = '', height = 40 }: LogoProps) => {
-    const getDark = () => typeof document !== 'undefined' && document.documentElement.classList.contains('dark');
-    const [isDark, setIsDark] = useState<boolean>(getDark());
+export const Logo = ({ height, className }: LogoProps) => {
+    const { theme } = useTheme();
 
-    useEffect(() => {
-        const root = document.documentElement;
-        const observer = new MutationObserver(() => setIsDark(root.classList.contains('dark')));
-        observer.observe(root, { attributes: true, attributeFilter: ['class'] });
-        return () => observer.disconnect();
-    }, []);
+    // Determine which logo to use based on the theme
+    const logoSrc = theme === 'dark' ? whiteLogo : blackLogo;
 
-    const src = useMemo(() => (isDark ? whiteLogo : blackLogo), [isDark]);
+    // Calculate the width based on the aspect ratio of the logo (1307x393)
+    const aspectRatio = 1307 / 393;
+    const width = height * aspectRatio;
 
-    return <img src={src} alt="Purple Bank" style={{ height }} className={`h-[${height}px] ${className}`} />;
+    return (
+        <Link to="/" className={`flex items-center justify-center ${className}`}>
+            <img src={logoSrc} alt="Purple Bank Logo" style={{ height: `${height}px`, width: `${width}px` }} />
+        </Link>
+    );
 };
