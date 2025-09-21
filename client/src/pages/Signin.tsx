@@ -1,14 +1,14 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
-
 import { Header } from '@/components/Header';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { PageTitle } from '@/components/ui/typography';
 import { AuthLayout } from '@/components/AuthLayout';
+import { api } from '@/services/api';
 
 const formSchema = z.object({
     email: z.string().email({
@@ -20,6 +20,7 @@ const formSchema = z.object({
 });
 
 export const Signin = () => {
+    const navigate = useNavigate();
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -28,9 +29,15 @@ export const Signin = () => {
         },
     });
 
-    function onSubmit(values: z.infer<typeof formSchema>) {
-        console.log(values);
-    }
+    const onSubmit = async (values: z.infer<typeof formSchema>) => {
+        try {
+            await api.auth.login(values.email, values.password);
+            navigate('/dashboard');
+        } catch (error) {
+            console.error(error);
+            // Handle login error (e.g., show a toast message)
+        }
+    };
 
     return (
         <div

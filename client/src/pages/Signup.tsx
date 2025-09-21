@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
@@ -6,11 +6,12 @@ import { Header } from '@/components/Header';
 import { LegalDialogs } from '@/components/LegalDialogs';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { purpleGradientBG } from '@/constants';
+import { PURPLE_GRADIENT_BG } from '@/constants';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Checkbox } from '@/components/ui/checkbox';
 import { PageTitle } from '@/components/ui/typography';
 import { AuthLayout } from '@/components/AuthLayout';
+import { api } from '@/services/api';
 
 const formSchema = z.object({
     fullName: z.string().refine(
@@ -34,6 +35,7 @@ const formSchema = z.object({
 });
 
 export const Signup = () => {
+    const navigate = useNavigate();
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -44,9 +46,15 @@ export const Signup = () => {
         },
     });
 
-    function onSubmit(values: z.infer<typeof formSchema>) {
-        console.log(values);
-    }
+    const onSubmit = async (values: z.infer<typeof formSchema>) => {
+        try {
+            await api.auth.signup(values.fullName, values.email, values.password);
+            navigate('/dashboard');
+        } catch (error) {
+            console.error(error);
+            // Handle signup error
+        }
+    };
 
     return (
         <div
@@ -119,7 +127,7 @@ export const Signup = () => {
                         <Button
                             className="w-full text-white font-bold py-3 px-4 rounded-full shadow-lg transform transition-transform hover:scale-105"
                             style={{
-                                background: purpleGradientBG,
+                                background: PURPLE_GRADIENT_BG,
                             }}
                             type="submit"
                         >

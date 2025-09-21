@@ -1,16 +1,16 @@
 import { useNavigate } from 'react-router-dom';
-import { removeCookie } from 'typescript-cookie';
+import { api } from '@/services/api';
 import { Header } from '@/components/Header';
 import { LogOut, SendHorizontal } from 'lucide-react';
-import { purpleGradientBG } from '@/constants';
+import { PURPLE_GRADIENT_BG } from '@/constants';
 import { Button } from '@/components/ui/button';
 import { PageTitle } from '@/components/ui/typography';
 
 export const Dashboard = () => {
     const navigate = useNavigate();
 
-    const handleLogout = () => {
-        removeCookie('token');
+    const handleLogout = async () => {
+        await api.auth.logout();
         navigate('/');
     };
 
@@ -25,7 +25,7 @@ export const Dashboard = () => {
                     <Button
                         onClick={handleLogout}
                         className="flex items-center text-sm font-medium text-white"
-                        style={{ background: purpleGradientBG }}
+                        style={{ background: PURPLE_GRADIENT_BG }}
                     >
                         <LogOut className="h-4 w-4 mr-2" />
                         Sign out
@@ -45,8 +45,17 @@ export const Dashboard = () => {
                     <SendHorizontal className="h-5 w-5 mr-2" />
                     Send money
                 </Button>
-                <div className="mt-12 rounded-xl shadow-md p-6 h-96" style={{ background: purpleGradientBG }}>
-                    {/* Transactions or other content will go here */}
+                <div className="mt-12 rounded-xl shadow-md p-6 h-96" style={{ background: PURPLE_GRADIENT_BG }}>
+                    // TODO: create a component for the transactions
+                    {api.transaction.getTransactions().then((transactions) => {
+                        return (
+                            <div>
+                                {transactions.map((transaction: any) => (
+                                    <div key={transaction.id}>{transaction.amount}</div>
+                                ))}
+                            </div>
+                        );
+                    })}
                 </div>
             </main>
         </div>

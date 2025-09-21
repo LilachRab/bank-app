@@ -30,7 +30,7 @@ export const Home = () => {
                 }
             />
 
-            {/* Hero */}
+            {/* main content */}
             <main className="flex-grow">
                 <section className="text-white" style={{ background: purpleGradientBG }}>
                     <div className="w-full px-3 sm:px-4 md:px-6 py-20 md:py-32 text-center">
