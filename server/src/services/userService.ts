@@ -15,7 +15,7 @@ const getUserByEmail = (email: string) => {
     });
 };
 
-const createUser = async (userData: UserDto) => {
+const insertUser = async (userData: UserDto) => {
     const isUserExists = await prisma.user.findUnique({ where: { email: userData.email } });
 
     if (isUserExists) {
@@ -36,5 +36,5 @@ const createUser = async (userData: UserDto) => {
 
 export const userService = {
     getUserByEmail,
-    createUser,
+    insertUser,
 };

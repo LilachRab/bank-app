@@ -1,7 +1,7 @@
 import { Prisma } from '@prisma/client';
 import prisma from '../utils/prismaClient';
 
-const createDbTransaction = async (senderEmail: string, receiverEmail: string, amount: number) => {
+const insertTransaction = async (senderEmail: string, receiverEmail: string, amount: number) => {
     return prisma.$transaction(async (prismaTransactionClient: Prisma.TransactionClient) => {
         // 1. Find the receiver
         const receiver = await prismaTransactionClient.user.findUnique({
@@ -44,6 +44,18 @@ const createDbTransaction = async (senderEmail: string, receiverEmail: string, a
     });
 };
 
+const getUserTransactions = async (email: string) => {
+    return prisma.transaction.findMany({
+        where: {
+            OR: [{ senderEmail: email }, { receiverEmail: email }],
+        },
+        orderBy: {
+            createdAt: 'desc',
+        },
+    });
+};
+
 export const transactionService = {
-    createDbTransaction,
+    insertTransaction,
+    getUserTransactions,
 };

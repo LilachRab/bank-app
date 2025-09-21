@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { createTransaction } from '../controllers/transactionController';
+import { createTransaction, getAllTransactions } from '../controllers/transactionController';
 
 export const createTransactionRouter = () => {
     const transactionRouter = Router();
@@ -15,6 +15,14 @@ export const createTransactionRouter = () => {
      *         description: Transaction created successfully
      */
     transactionRouter.post('/create', createTransaction);
+    /**
+     * @swagger
+     * /api/transactions:
+     *   get:
+     *     summary: Get all transactions for a user
+     *     tags: [Transactions]
+     */
+    transactionRouter.get('/', getAllTransactions);
 
     return transactionRouter;
 };

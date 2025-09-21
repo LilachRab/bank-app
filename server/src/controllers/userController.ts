@@ -1,13 +1,8 @@
 import { Request, Response } from 'express';
 import httpStatus from 'http-status-codes';
 import { userService } from '../services/userService';
-import { User } from '../models/user';
 
-interface AuthRequest extends Request {
-    user?: User;
-}
-
-export const getUser = async (req: AuthRequest, res: Response) => {
+export const getUser = async (req: Request, res: Response) => {
     const requestedEmail = req.params.email;
     const authenticatedUserEmail = req.user?.email;
 

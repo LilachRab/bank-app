@@ -5,7 +5,7 @@ import { userService } from './userService';
 import { UserDto } from '../dtos/user.dto';
 
 const registerUser = async (userData: UserDto) => {
-    return userService.createUser(userData);
+    return userService.insertUser(userData);
 };
 
 const loginUser = async (credentials: Pick<User, 'email' | 'password'>) => {

@@ -22,6 +22,7 @@ model Transaction {
   amount      Float
   senderEmail    String
   receiverEmail  String
+  createdAt   DateTime @default(now())
   sender      User     @relation("SentTransactions", fields: [senderEmail], references: [email])
   receiver    User     @relation("ReceivedTransactions", fields: [receiverEmail], references: [email])
 }
