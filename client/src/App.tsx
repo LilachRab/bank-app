@@ -1,5 +1,5 @@
 import { Route, Routes } from 'react-router-dom';
-import { ProtectedRoute } from './components/ProtectedRoute';
+// import { ProtectedRoute } from './components/ProtectedRoute';
 import { Dashboard } from './pages/Dashboard';
 import { Home } from './pages/Home';
 import { Signup } from './pages/Signup';
@@ -12,9 +12,9 @@ export const App = () => {
             <Route path="/signup" element={<Signup />} />
             <Route path="/signin" element={<Signin />} />
 
-            <Route element={<ProtectedRoute />}>
+            {/* <Route element={<ProtectedRoute />}> */}
                 <Route path="/dashboard" element={<Dashboard />} />
-            </Route>
+            {/* </Route> */}
         </Routes>
     );
 };

@@ -7,7 +7,7 @@ export const ProtectedRoute = () => {
 
     useEffect(() => {
         const verifyAuth = async () => {
-            const isAuthenticated = await api.checkAuth();
+            const isAuthenticated = await api.auth.checkAuth();
             setIsAuthenticated(isAuthenticated);
         };
 

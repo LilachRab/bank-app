@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import { Header } from '@/components/Header';
 import { ArrowRightLeft, SquareChartGantt } from 'lucide-react';
 import { LegalDialogs } from '@/components/LegalDialogs';
-import { purpleGradientBG } from '@/constants';
+import { PURPLE_GRADIENT_BG } from '@/constants';
 import { Button } from '@/components/ui/button';
 
 export const Home = () => {
@@ -21,7 +21,7 @@ export const Home = () => {
                             <Link
                                 to="/signup"
                                 className="px-4 py-2 text-[15px] font-semibold text-white"
-                                style={{ background: purpleGradientBG }}
+                                style={{ background: PURPLE_GRADIENT_BG }}
                             >
                                 Open Account
                             </Link>
@@ -32,7 +32,7 @@ export const Home = () => {
 
             {/* main content */}
             <main className="flex-grow">
-                <section className="text-white" style={{ background: purpleGradientBG }}>
+                <section className="text-white" style={{ background: PURPLE_GRADIENT_BG }}>
                     <div className="w-full px-3 sm:px-4 md:px-6 py-20 md:py-32 text-center">
                         <h1 className="text-4xl md:text-6xl font-bold mb-4">Welcome to Your Personal Bank</h1>
                         <p className="text-white/70 text-lg md:text-xl mb-10 max-w-3xl mx-auto">

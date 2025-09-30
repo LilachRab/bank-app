@@ -1,17 +1,53 @@
 import { useNavigate } from 'react-router-dom';
 import { api } from '@/services/api';
 import { Header } from '@/components/Header';
-import { LogOut, SendHorizontal } from 'lucide-react';
+import { LogOut } from 'lucide-react';
 import { PURPLE_GRADIENT_BG } from '@/constants';
 import { Button } from '@/components/ui/button';
 import { PageTitle } from '@/components/ui/typography';
+import { useState, useEffect } from 'react';
+import { TransactionList } from '@/components/TransactionList';
+import { TransactionDialog } from '@/components/TransactionDialog';
+import { SendMoneyButton } from '@/components/SendMoneyButton';
+import type { Transaction } from '@/types/transaction';
 
 export const Dashboard = () => {
     const navigate = useNavigate();
+    const [transactions, setTransactions] = useState<Transaction[]>([]);
+    const [userEmail, setUserEmail] = useState<string>('');
+    const [isTransactionDialogOpen, setIsTransactionDialogOpen] = useState(false);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const [userTransactions, userData] = await Promise.all([
+                    api.transaction.getTransactions(),
+                    api.user.getUser(),
+                ]);
+                setTransactions(userTransactions);
+                setUserEmail(userData.email);
+            } catch (error) {
+                console.error(error);
+            }
+        };
+
+        fetchData();
+    }, []);
 
     const handleLogout = async () => {
         await api.auth.logout();
         navigate('/');
+    };
+
+    const handleSendMoneyClick = () => {
+        setIsTransactionDialogOpen(true);
+    };
+
+    const addNewTransaction = (newTransaction?: Transaction) => {
+        // Add new transaction to the beginning of the list (most recent first)
+        if (newTransaction) {
+            setTransactions((prev) => [newTransaction, ...prev]);
+        }
     };
 
     // TODO: Fetch user's name and balance from the API
@@ -24,7 +60,7 @@ export const Dashboard = () => {
                 rightContent={
                     <Button
                         onClick={handleLogout}
-                        className="flex items-center text-sm font-medium text-white"
+                        className="flex items-center text-sm font-medium text-white transform transition-transform hover:scale-105"
                         style={{ background: PURPLE_GRADIENT_BG }}
                     >
                         <LogOut className="h-4 w-4 mr-2" />
@@ -41,22 +77,13 @@ export const Dashboard = () => {
                     {userBalance}
                     <span className="mr-4 ml-2">₪</span>
                 </div>
-                <Button className="mt-8 bg-yellow-400 text-gray-800 px-6 py-3 font-semibold hover:bg-yellow-500">
-                    <SendHorizontal className="h-5 w-5 mr-2" />
-                    Send money
-                </Button>
-                <div className="mt-12 rounded-xl shadow-md p-6 h-96" style={{ background: PURPLE_GRADIENT_BG }}>
-                    // TODO: create a component for the transactions
-                    {api.transaction.getTransactions().then((transactions) => {
-                        return (
-                            <div>
-                                {transactions.map((transaction: any) => (
-                                    <div key={transaction.id}>{transaction.amount}</div>
-                                ))}
-                            </div>
-                        );
-                    })}
-                </div>
+                <SendMoneyButton className="mt-8" onClick={handleSendMoneyClick} />
+                <TransactionDialog
+                    open={isTransactionDialogOpen}
+                    onOpenChange={setIsTransactionDialogOpen}
+                    onTransactionSuccess={addNewTransaction}
+                />
+                <TransactionList transactions={transactions} userEmail={userEmail} />
             </main>
         </div>
     );

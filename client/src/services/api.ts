@@ -14,6 +14,14 @@ export const api = {
         logout: async () => {
             return await axiosInstance.post('/auth/logout');
         },
+        checkAuth: async () => {
+            try {
+                await axiosInstance.get('/auth/me');
+                return true;
+            } catch (error) {
+                return false;
+            }
+        },
     },
     transaction: {
         makeTransaction: async (amount: number, receiverEmail: string) => {
@@ -30,13 +38,5 @@ export const api = {
             const response = await axiosInstance.get('/users');
             return response.data;
         },
-    },
-    checkAuth: async () => {
-        try {
-            await axiosInstance.get('/auth/me');
-            return true;
-        } catch (error) {
-            return false;
-        }
     },
 };

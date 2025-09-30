@@ -9,6 +9,8 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { PageTitle } from '@/components/ui/typography';
 import { AuthLayout } from '@/components/AuthLayout';
 import { api } from '@/services/api';
+import { OrSeparator } from '@/components/OrSeparator';
+import { GoogleIcon } from '@/components/GoogleIcon';
 
 const formSchema = z.object({
     email: z.string().email({
@@ -54,7 +56,7 @@ export const Signin = () => {
                 </p>
 
                 <Form {...form}>
-                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                         <FormField
                             control={form.control}
                             name="email"
@@ -90,33 +92,25 @@ export const Signin = () => {
                         >
                             Sign In
                         </Button>
+
+                        <OrSeparator />
+
+                        <Button
+                            variant="outline"
+                            className="w-full flex items-center justify-center py-2 px-4 border hover:bg-gray-100 dark:hover:bg-gray-700"
+                        >
+                            <GoogleIcon className="h-5 w-5 mr-2" />
+                            Sign in with Google
+                        </Button>
+
+                        <p className="mt-6 text-center text-sm text-gray-600 dark:text-gray-300">
+                            Don't have an account?{' '}
+                            <Link className="font-medium text-blue-600 hover:text-blue-500" to="/signup">
+                                Sign Up
+                            </Link>
+                        </p>
                     </form>
                 </Form>
-
-                <div className="my-6 flex items-center">
-                    <div className="flex-grow bg-gray-300 h-px"></div>
-                    <span className="flex-shrink text-sm text-gray-500 px-4">or</span>
-                    <div className="flex-grow bg-gray-300 h-px"></div>
-                </div>
-
-                <Button
-                    variant="outline"
-                    className="w-full flex items-center justify-center py-2 px-4 border hover:bg-gray-100 dark:hover:bg-gray-700"
-                >
-                    <img
-                        alt="Google icon"
-                        className="h-5 w-5 mr-2"
-                        src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
-                    />
-                    Sign in with Google
-                </Button>
-
-                <p className="mt-6 text-center text-sm text-gray-600 dark:text-gray-300">
-                    Don't have an account?{' '}
-                    <Link className="font-medium text-blue-600 hover:text-blue-500" to="/signup">
-                        Sign Up
-                    </Link>
-                </p>
             </AuthLayout>
         </div>
     );
