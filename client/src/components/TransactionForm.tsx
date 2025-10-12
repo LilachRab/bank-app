@@ -66,10 +66,10 @@ export const TransactionForm = ({
             onTransactionStart?.();
 
             // Make the actual API call and get the created transaction
-            const newTransaction = await api.transaction.makeTransaction(Number(values.amount), values.receiverEmail);
+            // const newTransaction = await api.transaction.makeTransaction(Number(values.amount), values.receiverEmail);
 
             // Pass the new transaction to the parent component
-            onSubmitSuccess?.(newTransaction);
+            // onSubmitSuccess?.(newTransaction);
         } catch (error) {
             console.error('Transaction failed:', error);
             // Call the error handler to show failure state

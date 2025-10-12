@@ -11,6 +11,43 @@ import { TransactionDialog } from '@/components/TransactionDialog';
 import { SendMoneyButton } from '@/components/SendMoneyButton';
 import type { Transaction } from '@/types/transaction';
 
+// Mock transactions for testing pagination
+const generateMockTransactions = (userEmail: string): Transaction[] => {
+    const mockEmails = [
+        'alice@example.com',
+        'bob@example.com',
+        'charlie@example.com',
+        'diana@example.com',
+        'eve@example.com',
+        'frank@example.com',
+        'grace@example.com',
+        'henry@example.com',
+        'iris@example.com',
+        'jack@example.com',
+    ];
+
+    const mockTransactions: Transaction[] = [];
+    const now = new Date();
+
+    for (let i = 0; i < 13; i++) {
+        const date = new Date(now);
+        date.setDate(date.getDate() - i);
+
+        const isSent = i % 3 !== 0; // Mix of sent and received
+        const otherEmail = mockEmails[i % mockEmails.length];
+
+        mockTransactions.push({
+            id: `mock-${i + 1}`,
+            amount: Math.floor(Math.random() * 900) + 100, // Random amount between 100-1000
+            senderEmail: isSent ? userEmail : otherEmail,
+            receiverEmail: isSent ? otherEmail : userEmail,
+            createdAt: date.toISOString(),
+        });
+    }
+
+    return mockTransactions;
+};
+
 export const Dashboard = () => {
     const navigate = useNavigate();
     const [transactions, setTransactions] = useState<Transaction[]>([]);
@@ -24,10 +61,17 @@ export const Dashboard = () => {
                     api.transaction.getTransactions(),
                     api.user.getUser(),
                 ]);
-                setTransactions(userTransactions);
+
+                // Use mock transactions for testing if no real transactions exist
+                const mockTransactions = generateMockTransactions(userData.email);
+                setTransactions(userTransactions.length > 0 ? userTransactions : mockTransactions);
                 setUserEmail(userData.email);
             } catch (error) {
                 console.error(error);
+                // If API fails, use mock data with a default email
+                const defaultEmail = 'user@example.com';
+                setUserEmail(defaultEmail);
+                setTransactions(generateMockTransactions(defaultEmail));
             }
         };
 

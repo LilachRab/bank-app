@@ -37,10 +37,10 @@ export const TransactionList = ({ transactions, userEmail }: TransactionListProp
     };
 
     return (
-        <div className="mt-12">
+        <div className="mt-12 w-full max-w-6xl mx-auto">
             <Label className="text-gray-400 dark:text-gray-600 text-lg mb-4 text-left">Recent Transactions</Label>
             <div className="rounded-xl shadow-md p-6" style={{ background: PURPLE_GRADIENT_BG }}>
-                <div className="rounded-lg overflow-hidden">
+                <div className="rounded-lg overflow-hidden w-full">
                     {currentTransactions.length > 0 ? (
                         currentTransactions.map((transaction: TransactionType) => (
                             <Transaction
@@ -65,9 +65,9 @@ export const TransactionList = ({ transactions, userEmail }: TransactionListProp
                                 <PaginationItem>
                                     <PaginationPrevious
                                         onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
-                                        className={
+                                        className={`${
                                             currentPage === 1 ? 'pointer-events-none opacity-50' : 'cursor-pointer'
-                                        }
+                                        } text-gray-100 hover:text-white`}
                                     />
                                 </PaginationItem>
 
@@ -76,7 +76,11 @@ export const TransactionList = ({ transactions, userEmail }: TransactionListProp
                                         <PaginationLink
                                             onClick={() => handlePageChange(page)}
                                             isActive={currentPage === page}
-                                            className="cursor-pointer"
+                                            className={`cursor-pointer ${
+                                                currentPage === page
+                                                    ? 'text-white bg-white/20 border-white/30'
+                                                    : 'text-gray-100 hover:text-white hover:bg-white/10'
+                                            }`}
                                         >
                                             {page}
                                         </PaginationLink>
@@ -86,11 +90,11 @@ export const TransactionList = ({ transactions, userEmail }: TransactionListProp
                                 <PaginationItem>
                                     <PaginationNext
                                         onClick={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
-                                        className={
+                                        className={`${
                                             currentPage === totalPages
                                                 ? 'pointer-events-none opacity-50'
                                                 : 'cursor-pointer'
-                                        }
+                                        } text-gray-100 hover:text-white`}
                                     />
                                 </PaginationItem>
                             </PaginationContent>

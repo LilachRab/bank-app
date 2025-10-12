@@ -13,10 +13,10 @@ export interface TransactionProps {
 const labelStyles = {
     base: 'px-2 py-1 rounded-full text-xs font-medium w-16 text-center mr-2 flex-shrink-0',
     variants: {
-        date: 'bg-blue-100 text-blue-800',
-        from: 'bg-purple-100 text-purple-800',
-        to: 'bg-teal-100 text-teal-800',
-        amount: 'bg-amber-100 text-amber-800',
+        date: 'bg-blue-200 text-blue-900',
+        from: 'bg-purple-200 text-purple-900',
+        to: 'bg-cyan-200 text-cyan-900',
+        amount: 'bg-amber-200 text-amber-900',
     },
 };
 
@@ -27,12 +27,12 @@ const sectionStyles = {
 };
 
 const textStyles = {
-    content: 'text-gray-800 text-xs sm:text-sm',
-    date: 'text-gray-600 text-xs sm:text-sm',
+    content: 'text-gray-100 text-xs sm:text-sm',
+    date: 'text-gray-200 text-xs sm:text-sm',
     amount: {
         base: 'font-semibold whitespace-nowrap sm:text-right sm:w-20',
-        positive: 'text-green-600',
-        negative: 'text-red-600',
+        positive: 'text-green-400',
+        negative: 'text-red-500',
     },
 };
 
@@ -56,7 +56,7 @@ export const Transaction: React.FC<TransactionProps> = ({ date, sender, receiver
     });
 
     return (
-        <div className="flex flex-col sm:flex-row sm:items-center w-full p-4 border-b border-gray-200 hover:bg-gray-50 transition-colors gap-2 sm:gap-0">
+        <div className="flex flex-col sm:flex-row sm:items-center w-full p-4 border-b-[0.5px] border-gray-600 hover:bg-white/5 transition-colors gap-2 sm:gap-0">
             {/* Date with time */}
             <div className={`${sectionStyles.mobile} ${sectionStyles.base}`}>
                 <span className={`${labelStyles.base} ${labelStyles.variants.date}`}>date</span>
