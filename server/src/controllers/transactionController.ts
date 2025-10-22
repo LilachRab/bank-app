@@ -1,25 +1,35 @@
 import { Request, Response } from 'express';
 import httpStatus from 'http-status-codes';
 import { transactionService } from '../services/transactionService';
+import { TransactionInput } from '../models/transaction';
 
 export const createTransaction = async (req: Request, res: Response) => {
-    const { receiverEmail, transactionAmount } = req.body;
-    const sender = req.user;
+    const transactionData: TransactionInput = req.body;
+    const sender = req.body.user;
 
     if (!sender) {
         return res.status(httpStatus.UNAUTHORIZED).json({ message: 'Not authorized' });
     }
 
-    if (sender.email === receiverEmail) {
-        return res.status(httpStatus.BAD_REQUEST).json({ message: 'You cannot send money to yourself.' });
-    }
+    try {
+        await transactionService.insertTransaction(sender, transactionData);
+        res.status(httpStatus.OK).json({ message: 'Transaction created successfully' });
+    } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : 'Transaction failed';
 
-    await transactionService.insertTransaction(sender.email, receiverEmail, transactionAmount);
-    res.status(httpStatus.OK).json({ message: 'Transaction created successfully' });
+        let statusCode = httpStatus.INTERNAL_SERVER_ERROR;
+        if (errorMessage.includes('not found')) {
+            statusCode = httpStatus.NOT_FOUND;
+        } else if (errorMessage.includes('enough money') || errorMessage.includes('yourself')) {
+            statusCode = httpStatus.BAD_REQUEST;
+        }
+
+        res.status(statusCode).json({ message: errorMessage });
+    }
 };
 
 export const getAllTransactions = async (req: Request, res: Response) => {
-    const user = req.user;
+    const user = req.body.user;
     if (!user) {
         return res.status(httpStatus.UNAUTHORIZED).json({ message: 'Not authorized' });
     }

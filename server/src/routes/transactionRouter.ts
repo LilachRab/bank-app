@@ -1,8 +1,18 @@
 import { Router } from 'express';
 import { createTransaction, getAllTransactions } from '../controllers/transactionController';
+import { validateTransaction } from '../middleware/validationMiddleware';
 
 export const createTransactionRouter = () => {
     const transactionRouter = Router();
+
+    /**
+     * @swagger
+     * /api/transactions:
+     *   get:
+     *     summary: Get all transactions for a user
+     *     tags: [Transactions]
+     */
+    transactionRouter.get('/', getAllTransactions);
 
     /**
      * @swagger
@@ -14,15 +24,7 @@ export const createTransactionRouter = () => {
      *       200:
      *         description: Transaction created successfully
      */
-    transactionRouter.post('/create', createTransaction);
-    /**
-     * @swagger
-     * /api/transactions:
-     *   get:
-     *     summary: Get all transactions for a user
-     *     tags: [Transactions]
-     */
-    transactionRouter.get('/', getAllTransactions);
+    transactionRouter.post('/create', validateTransaction, createTransaction);
 
     return transactionRouter;
 };

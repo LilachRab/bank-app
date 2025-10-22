@@ -26,7 +26,7 @@ export const protectByToken = async (req: Request, res: Response, next: NextFunc
         if (!user) {
             return res.status(httpStatus.UNAUTHORIZED).json({ message: 'User not found' });
         }
-        req.user = user;
+        req.body.user = user;
 
         next();
     } catch (error) {

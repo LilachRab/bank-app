@@ -6,9 +6,19 @@ import { UserDto, LoginDto } from '../dtos/user.dto';
 import { addTokenToBlacklist } from '../services/tokenBlacklistService';
 
 export const register = async (req: Request, res: Response) => {
-    const userData: UserDto = req.body;
-    await authService.registerUser(userData);
-    res.status(httpStatus.CREATED).json({ message: 'User registered successfully' });
+    try {
+        const userData: UserDto = req.body;
+        await authService.registerUser(userData);
+        res.status(httpStatus.CREATED).json({ message: 'User registered successfully' });
+    } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : 'Registration failed';
+
+        if (errorMessage.includes('already exists')) {
+            return res.status(httpStatus.BAD_REQUEST).json({ message: errorMessage });
+        }
+
+        res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ message: errorMessage });
+    }
 };
 
 export const login = async (req: Request, res: Response) => {
@@ -37,9 +47,4 @@ export const logout = async (req: Request, res: Response) => {
 
     res.clearCookie('token');
     res.status(httpStatus.OK).json({ message: 'Logged out successfully' });
-};
-
-export const me = async (req: Request, res: Response) => {
-    // req.user is populated by the protectByToken middleware
-    res.status(httpStatus.OK).json(req.user);
 };

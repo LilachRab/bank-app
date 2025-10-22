@@ -4,3 +4,8 @@ export interface Transaction {
     senderEmail: string;
     receiverEmail: string;
 }
+
+export interface TransactionInput {
+    receiverEmail: string;
+    transactionAmount: number;
+}

@@ -6,15 +6,15 @@ export const createUserRouter = () => {
 
     /**
      * @swagger
-     * /api/users/:userEmail:
+     * /api/users/me:
      *   get:
-     *     summary: Get a user
+     *     summary: Get current user
      *     tags: [Users]
      *     responses:
      *       200:
      *         description: User retrieved successfully
      */
-    userRouter.get('/:userEmail', getUser);
+    userRouter.get('/me', getUser);
 
     return userRouter;
 };

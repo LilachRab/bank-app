@@ -3,7 +3,7 @@ import 'express-async-errors';
 import cors from 'cors';
 import { setupSwagger } from './swagger';
 import { routes } from './routes';
-import errorHandler from './middleware/errorMiddleware';
+import {errorHandler} from './middleware/errorMiddleware';
 import cookieParser from 'cookie-parser';
 const app = express();
 

@@ -6,7 +6,7 @@ interface AppError extends Error {
     isOperational?: boolean;
 }
 
-const errorHandler = (err: AppError, req: Request, res: Response, _next: NextFunction) => {
+export const errorHandler = (err: AppError, req: Request, res: Response, _next: NextFunction) => {
     err.statusCode = err.statusCode || httpStatus.INTERNAL_SERVER_ERROR;
     err.message = err.message || 'Something went wrong';
 
@@ -15,5 +15,3 @@ const errorHandler = (err: AppError, req: Request, res: Response, _next: NextFun
         message: err.message,
     });
 };
-
-export default errorHandler;

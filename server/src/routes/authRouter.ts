@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import httpStatus from 'http-status-codes';
-import { register, login, logout, me } from '../controllers/authController';
-import { protectByToken } from '../middleware/authMiddleware';
+import { register, login, logout } from '../controllers/authController';
+import { validateRegistration, validateLogin } from '../middleware/validationMiddleware';
 
 export const createAuthRouter = () => {
     const authRouter = Router();
@@ -16,7 +16,7 @@ export const createAuthRouter = () => {
      *       200:
      *         description: User registered successfully
      */
-    authRouter.post('/register', register);
+    authRouter.post('/register', validateRegistration, register);
 
     /**
      * @swagger
@@ -28,7 +28,7 @@ export const createAuthRouter = () => {
      *       200:
      *         description: User logged in successfully
      */
-    authRouter.post('/login', login);
+    authRouter.post('/login', validateLogin, login);
 
     /**
      * @swagger
@@ -41,20 +41,6 @@ export const createAuthRouter = () => {
      *         description: User logged out successfully
      */
     authRouter.post('/logout', logout);
-
-    /**
-     * @swagger
-     * /auth/me:
-     *   get:
-     *     summary: Get current user
-     *     tags: [Auth]
-     *     security:
-     *       - bearerAuth: []
-     *     responses:
-     *       200:
-     *         description: Returns the current user
-     */
-    authRouter.get('/me', protectByToken, me);
 
     return authRouter;
 };
