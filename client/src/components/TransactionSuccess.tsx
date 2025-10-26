@@ -3,9 +3,10 @@ import { Button } from './ui/button';
 
 interface TransactionSuccessProps {
     onClose: () => void;
+    message?: string;
 }
 
-export const TransactionSuccess = ({ onClose }: TransactionSuccessProps) => {
+export const TransactionSuccess = ({ onClose, message }: TransactionSuccessProps) => {
     return (
         <div className="text-center space-y-6 animate-in fade-in-0 zoom-in-95 duration-300">
             <div className="flex justify-center">
@@ -15,7 +16,9 @@ export const TransactionSuccess = ({ onClose }: TransactionSuccessProps) => {
             </div>
             <div className="space-y-2">
                 <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Transaction Successful!</h2>
-                <p className="text-gray-600 dark:text-gray-400">Your payment has been processed successfully.</p>
+                <p className="text-gray-600 dark:text-gray-400">
+                    {message || 'Your payment has been processed successfully'}
+                </p>
             </div>
             <div className="flex justify-center">
                 <Button

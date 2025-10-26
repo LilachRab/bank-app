@@ -10,76 +10,53 @@ import { TransactionList } from '@/components/TransactionList';
 import { TransactionDialog } from '@/components/TransactionDialog';
 import { SendMoneyButton } from '@/components/SendMoneyButton';
 import type { Transaction } from '@/types/transaction';
-
-// Mock transactions for testing pagination
-const generateMockTransactions = (userEmail: string): Transaction[] => {
-    const mockEmails = [
-        'alice@example.com',
-        'bob@example.com',
-        'charlie@example.com',
-        'diana@example.com',
-        'eve@example.com',
-        'frank@example.com',
-        'grace@example.com',
-        'henry@example.com',
-        'iris@example.com',
-        'jack@example.com',
-    ];
-
-    const mockTransactions: Transaction[] = [];
-    const now = new Date();
-
-    for (let i = 0; i < 13; i++) {
-        const date = new Date(now);
-        date.setDate(date.getDate() - i);
-
-        const isSent = i % 3 !== 0; // Mix of sent and received
-        const otherEmail = mockEmails[i % mockEmails.length];
-
-        mockTransactions.push({
-            id: `mock-${i + 1}`,
-            amount: Math.floor(Math.random() * 900) + 100, // Random amount between 100-1000
-            senderEmail: isSent ? userEmail : otherEmail,
-            receiverEmail: isSent ? otherEmail : userEmail,
-            createdAt: date.toISOString(),
-        });
-    }
-
-    return mockTransactions;
-};
+import type { User } from '@/types/user';
+import type { CreateTransactionRequest } from '@/types/transaction';
 
 export const Dashboard = () => {
     const navigate = useNavigate();
     const [transactions, setTransactions] = useState<Transaction[]>([]);
-    const [userEmail, setUserEmail] = useState<string>('');
+    const [user, setUser] = useState<User>({
+        email: '',
+        firstName: '',
+        lastName: '',
+        balance: 0,
+    });
     const [isTransactionDialogOpen, setIsTransactionDialogOpen] = useState(false);
 
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const [userTransactions, userData] = await Promise.all([
-                    api.transaction.getTransactions(),
-                    api.user.getUser(),
-                ]);
+    const getTransactions = async () => {
+        try {
+            const res = await api.transaction.getTransactions();
 
-                // Use mock transactions for testing if no real transactions exist
-                const mockTransactions = generateMockTransactions(userData.email);
-                setTransactions(userTransactions.length > 0 ? userTransactions : mockTransactions);
-                setUserEmail(userData.email);
-            } catch (error) {
-                console.error(error);
-                // If API fails, use mock data with a default email
-                const defaultEmail = 'user@example.com';
-                setUserEmail(defaultEmail);
-                setTransactions(generateMockTransactions(defaultEmail));
+            if (res) {
+                setTransactions(res);
             }
-        };
+        } catch (error) {
+            console.error('Failed to fetch transactions:', error);
+        }
+    };
 
-        fetchData();
+    const getUser = async () => {
+        try {
+            const res = await api.user.getUser();
+
+            if (!res) {
+                return;
+            }
+
+            setUser(res);
+        } catch (error) {
+            console.error('Failed to fetch user data:', error);
+        }
+    };
+
+    useEffect(() => {
+        getUser();
+        getTransactions();
     }, []);
 
-    const handleLogout = async () => {
-        await api.auth.logout();
+    const handleSignout = async () => {
+        await api.auth.signout();
         navigate('/');
     };
 
@@ -87,23 +64,22 @@ export const Dashboard = () => {
         setIsTransactionDialogOpen(true);
     };
 
-    const addNewTransaction = (newTransaction?: Transaction) => {
-        // Add new transaction to the beginning of the list (most recent first)
-        if (newTransaction) {
-            setTransactions((prev) => [newTransaction, ...prev]);
-        }
-    };
+    const createTransaction = async (transactionData: CreateTransactionRequest) => {
+        const response = await api.transaction.makeTransaction(transactionData);
 
-    // TODO: Fetch user's name and balance from the API
-    const userName = 'John Doe';
-    const userBalance = '1,234.56';
+        if (response) {
+            await getTransactions();
+        }
+
+        return response.message;
+    };
 
     return (
         <div className="min-h-screen bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-100">
             <Header
                 rightContent={
                     <Button
-                        onClick={handleLogout}
+                        onClick={handleSignout}
                         className="flex items-center text-sm font-medium text-white transform transition-transform hover:scale-105"
                         style={{ background: PURPLE_GRADIENT_BG }}
                     >
@@ -115,19 +91,21 @@ export const Dashboard = () => {
 
             {/* Main Content */}
             <main className="container mx-auto px-6 py-12 text-center">
-                <PageTitle variant="light">Welcome {userName}</PageTitle>
+                <PageTitle variant="light">
+                    Welcome {user.firstName} {user.lastName}
+                </PageTitle>
                 <p className="mt-2 text-gray-500 dark:text-gray-400">Your balance</p>
                 <div className="mt-4 text-6xl font-bold text-gray-800 dark:text-gray-50 flex items-center justify-center">
-                    {userBalance}
+                    {user.balance.toLocaleString()}
                     <span className="mr-4 ml-2">₪</span>
                 </div>
                 <SendMoneyButton className="mt-8" onClick={handleSendMoneyClick} />
                 <TransactionDialog
                     open={isTransactionDialogOpen}
                     onOpenChange={setIsTransactionDialogOpen}
-                    onTransactionSuccess={addNewTransaction}
+                    createTransaction={createTransaction}
                 />
-                <TransactionList transactions={transactions} userEmail={userEmail} />
+                <TransactionList transactions={transactions} userEmail={user.email} />
             </main>
         </div>
     );

@@ -33,7 +33,7 @@ Future improvements include adding features such as real-time updates using Sock
 -   TypeScript
 -   Tailwind CSS
 -   shadcn/ui
--   Canva
+-   Figma
 -   AI tools: Stitch, Magic Patterns
 
 ## 🚀 Installation / Usage
@@ -51,18 +51,23 @@ Since environment variables and full setup are not included, the project cannot 
 Since the project is not deployed, here are some screenshots of the web app (shown in dark mode, light mode also supported):
 
 ### Home Page
+
 ![Home Page](./utils/screenshots/home.png)
 
 ### Signup Page
+
 ![Signup Page](./utils/screenshots/signup.png)
 
 ### Signin Page
+
 ![Signin Page](./utils/screenshots/signin.png)
 
 ### Dashboard Page
+
 ![Dashboard / Transaction history](./utils/screenshots/dashboard.png)
 
 ### Send Money Demo
+
 ![Send Money Demo](./utils/screenshots/transaction.gif)
 
 ## 🚧 Project Status

@@ -14,6 +14,8 @@ import { AuthLayout } from '@/components/AuthLayout';
 import { api } from '@/services/api';
 import { OrSeparator } from '@/components/OrSeparator';
 import { GoogleIcon } from '@/components/GoogleIcon';
+import { toast } from 'sonner';
+import axios from 'axios';
 
 const formSchema = z.object({
     fullName: z.string().refine(
@@ -51,10 +53,21 @@ export const Signup = () => {
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
         try {
             await api.auth.signup(values.fullName, values.email, values.password);
+            toast.success('You signed up successfully');
             navigate('/dashboard');
         } catch (error) {
             console.error(error);
-            // Handle signup error
+            let errorMessage = 'An unexpected error occurred. Please try again.';
+
+            if (axios.isAxiosError(error) && error.response?.data?.message) {
+                errorMessage = error.response.data.message;
+            } else if (error instanceof Error && error.message) {
+                errorMessage = error.message;
+            }
+
+            toast.error('Signup failed', {
+                description: errorMessage,
+            });
         }
     };
 
@@ -114,15 +127,18 @@ export const Signup = () => {
                             control={form.control}
                             name="terms"
                             render={({ field }) => (
-                                <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 shadow">
-                                    <FormControl>
-                                        <Checkbox checked={field.value} onCheckedChange={field.onChange} />
-                                    </FormControl>
-                                    <div className="space-y-1 leading-none">
-                                        <FormLabel>
-                                            I agree to the <LegalDialogs variant="combined" />
-                                        </FormLabel>
+                                <FormItem>
+                                    <div className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 shadow">
+                                        <FormControl>
+                                            <Checkbox checked={field.value} onCheckedChange={field.onChange} />
+                                        </FormControl>
+                                        <div className="space-y-1 leading-none">
+                                            <FormLabel>
+                                                I agree to the <LegalDialogs variant="combined" />
+                                            </FormLabel>
+                                        </div>
                                     </div>
+                                    <FormMessage />
                                 </FormItem>
                             )}
                         />

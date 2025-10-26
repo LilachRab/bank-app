@@ -11,6 +11,8 @@ import { AuthLayout } from '@/components/AuthLayout';
 import { api } from '@/services/api';
 import { OrSeparator } from '@/components/OrSeparator';
 import { GoogleIcon } from '@/components/GoogleIcon';
+import { toast } from 'sonner';
+import axios from 'axios';
 
 const formSchema = z.object({
     email: z.string().email({
@@ -33,11 +35,22 @@ export const Signin = () => {
 
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
         try {
-            await api.auth.login(values.email, values.password);
+            await api.auth.signin(values.email, values.password);
+            toast.success('You logged in successfully');
             navigate('/dashboard');
         } catch (error) {
             console.error(error);
-            // Handle login error (e.g., show a toast message)
+            let errorMessage = 'An unexpected error occurred. Please try again.';
+
+            if (axios.isAxiosError(error) && error.response?.data?.message) {
+                errorMessage = error.response.data.message;
+            } else if (error instanceof Error && error.message) {
+                errorMessage = error.message;
+            }
+
+            toast.error('Signin failed', {
+                description: errorMessage,
+            });
         }
     };
 

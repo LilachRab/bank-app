@@ -2,16 +2,16 @@ import { Request, Response } from 'express';
 import httpStatus from 'http-status-codes';
 import { authService } from '../services/authService';
 import { jwtService } from '../services/jwtService';
-import { UserDto, LoginDto } from '../dtos/user.dto';
+import { UserDto, SigninDto } from '../dtos/user.dto';
 import { addTokenToBlacklist } from '../services/tokenBlacklistService';
 
-export const register = async (req: Request, res: Response) => {
+export const signup = async (req: Request, res: Response) => {
     try {
         const userData: UserDto = req.body;
-        await authService.registerUser(userData);
-        res.status(httpStatus.CREATED).json({ message: 'User registered successfully' });
+        await authService.signupUser(userData);
+        res.status(httpStatus.CREATED).json({ message: 'User signed up successfully' });
     } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : 'Registration failed';
+        const errorMessage = error instanceof Error ? error.message : 'Signup failed';
 
         if (errorMessage.includes('already exists')) {
             return res.status(httpStatus.BAD_REQUEST).json({ message: errorMessage });
@@ -21,9 +21,9 @@ export const register = async (req: Request, res: Response) => {
     }
 };
 
-export const login = async (req: Request, res: Response) => {
-    const userLoginData: LoginDto = req.body;
-    const user = await authService.loginUser(userLoginData);
+export const signin = async (req: Request, res: Response) => {
+    const userSigninData: SigninDto = req.body;
+    const user = await authService.signinUser(userSigninData);
 
     if (!user) {
         return res.status(httpStatus.UNAUTHORIZED).json({ message: 'Invalid credentials' });
@@ -39,12 +39,12 @@ export const login = async (req: Request, res: Response) => {
     res.status(httpStatus.OK).json({ token });
 };
 
-export const logout = async (req: Request, res: Response) => {
+export const signout = async (req: Request, res: Response) => {
     const token = req.cookies.token;
     if (token) {
         await addTokenToBlacklist(token);
     }
 
     res.clearCookie('token');
-    res.status(httpStatus.OK).json({ message: 'Logged out successfully' });
+    res.status(httpStatus.OK).json({ message: 'Signed out successfully' });
 };

@@ -4,11 +4,11 @@ import { User } from '../models/user';
 import { userService } from './userService';
 import { UserDto } from '../dtos/user.dto';
 
-const registerUser = async (userData: UserDto) => {
+const signupUser = async (userData: UserDto) => {
     return userService.insertUser(userData);
 };
 
-const loginUser = async (credentials: Pick<User, 'email' | 'password'>) => {
+const signinUser = async (credentials: Pick<User, 'email' | 'password'>) => {
     const user = await prisma.user.findUnique({ where: { email: credentials.email } });
     if (!user || !credentials.password) {
         return null;
@@ -23,6 +23,6 @@ const loginUser = async (credentials: Pick<User, 'email' | 'password'>) => {
 };
 
 export const authService = {
-    registerUser,
-    loginUser,
+    signupUser,
+    signinUser,
 };

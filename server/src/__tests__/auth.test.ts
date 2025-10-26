@@ -12,7 +12,7 @@ const TEST_EMAILS = {
     REGISTRATION_4: 'test4@example.com',
     REGISTRATION_5: 'test5@example.com',
     INVALID_FORMAT: 'invalid-email',
-    LOGIN: 'test-login@example.com',
+    SIGNIN: 'test-signin@example.com',
     LOGOUT: 'logout-test@example.com',
 } as const;
 
@@ -32,8 +32,8 @@ describe('Test Auth Routes', () => {
         await prisma.$disconnect();
     });
 
-    describe('POST /auth/register', () => {
-        const registerPath = '/auth/register';
+    describe('POST /auth/signup', () => {
+        const signupPath = '/auth/signup';
         const testUser: UserDto = {
             email: TEST_EMAILS.REGISTRATION,
             firstName: 'Test',
@@ -52,26 +52,26 @@ describe('Test Auth Routes', () => {
             });
         });
 
-        it('Should register a new user and return CREATED', async () => {
-            const res = await request(app).post(registerPath).send(testUser);
+        it('Should signup a new user and return CREATED', async () => {
+            const res = await request(app).post(signupPath).send(testUser);
 
             expect(res.statusCode).toEqual(httpStatus.CREATED);
             expect(res.body).toHaveProperty('message', 'User registered successfully');
         });
 
-        it('Should not register a user with an existing email and return BAD_REQUEST', async () => {
+        it('Should not signup a user with an existing email and return BAD_REQUEST', async () => {
             // First, create a user
-            await request(app).post(registerPath).send(testUser);
+            await request(app).post(signupPath).send(testUser);
 
-            // Then, try to register with the same email
-            const res = await request(app).post(registerPath).send(testUser);
+            // Then, try to signup with the same email
+            const res = await request(app).post(signupPath).send(testUser);
 
             expect(res.statusCode).toEqual(httpStatus.BAD_REQUEST);
             expect(res.body.message).toContain('already exists');
         });
 
-        it('Should return BAD_REQUEST for missing email in registration', async () => {
-            const res = await request(app).post(registerPath).send({
+        it('Should return BAD_REQUEST for missing email in signup', async () => {
+            const res = await request(app).post(signupPath).send({
                 firstName: 'Test',
                 lastName: 'User',
                 password: 'password123',
@@ -81,8 +81,8 @@ describe('Test Auth Routes', () => {
             expect(res.body.message).toContain('required');
         });
 
-        it('Should return BAD_REQUEST for missing firstName in registration', async () => {
-            const res = await request(app).post(registerPath).send({
+        it('Should return BAD_REQUEST for missing firstName in signup', async () => {
+            const res = await request(app).post(signupPath).send({
                 email: TEST_EMAILS.REGISTRATION_2,
                 lastName: 'User',
                 password: 'password123',
@@ -92,8 +92,8 @@ describe('Test Auth Routes', () => {
             expect(res.body.message).toContain('required');
         });
 
-        it('Should return BAD_REQUEST for missing lastName in registration', async () => {
-            const res = await request(app).post(registerPath).send({
+        it('Should return BAD_REQUEST for missing lastName in signup', async () => {
+            const res = await request(app).post(signupPath).send({
                 email: TEST_EMAILS.REGISTRATION_3,
                 firstName: 'Test',
                 password: 'password123',
@@ -103,8 +103,8 @@ describe('Test Auth Routes', () => {
             expect(res.body.message).toContain('required');
         });
 
-        it('Should return BAD_REQUEST for missing password in registration', async () => {
-            const res = await request(app).post(registerPath).send({
+        it('Should return BAD_REQUEST for missing password in signup', async () => {
+            const res = await request(app).post(signupPath).send({
                 email: TEST_EMAILS.REGISTRATION_4,
                 firstName: 'Test',
                 lastName: 'User',
@@ -114,8 +114,8 @@ describe('Test Auth Routes', () => {
             expect(res.body.message).toContain('required');
         });
 
-        it('Should return BAD_REQUEST for empty email in registration', async () => {
-            const res = await request(app).post(registerPath).send({
+        it('Should return BAD_REQUEST for empty email in signup', async () => {
+            const res = await request(app).post(signupPath).send({
                 email: '',
                 firstName: 'Test',
                 lastName: 'User',
@@ -126,8 +126,8 @@ describe('Test Auth Routes', () => {
             expect(res.body.message).toContain('empty');
         });
 
-        it('Should return BAD_REQUEST for invalid email format in registration', async () => {
-            const res = await request(app).post(registerPath).send({
+        it('Should return BAD_REQUEST for invalid email format in signup', async () => {
+            const res = await request(app).post(signupPath).send({
                 email: TEST_EMAILS.INVALID_FORMAT,
                 firstName: 'Test',
                 lastName: 'User',
@@ -138,8 +138,8 @@ describe('Test Auth Routes', () => {
             expect(res.body.message).toContain('Invalid email format');
         });
 
-        it('Should return BAD_REQUEST for short password in registration', async () => {
-            const res = await request(app).post(registerPath).send({
+        it('Should return BAD_REQUEST for short password in signup', async () => {
+            const res = await request(app).post(signupPath).send({
                 email: TEST_EMAILS.REGISTRATION_5,
                 firstName: 'Test',
                 lastName: 'User',
@@ -151,17 +151,17 @@ describe('Test Auth Routes', () => {
         });
     });
 
-    describe('POST /auth/login', () => {
-        const loginPath = '/auth/login';
+    describe('POST /auth/signin', () => {
+        const signinPath = '/auth/signin';
         const testUser: UserDto = {
-            email: TEST_EMAILS.LOGIN,
+            email: TEST_EMAILS.SIGNIN,
             firstName: 'Test',
             lastName: 'Login',
             password: 'password123',
         };
 
         beforeAll(async () => {
-            await request(app).post('/auth/register').send(testUser);
+            await request(app).post('/auth/signup').send(testUser);
         });
 
         afterAll(async () => {
@@ -174,8 +174,8 @@ describe('Test Auth Routes', () => {
             });
         });
 
-        it('Should login an existing user and return a token', async () => {
-            const res = await request(app).post(loginPath).send({
+        it('Should signin an existing user and return a token', async () => {
+            const res = await request(app).post(signinPath).send({
                 email: testUser.email,
                 password: testUser.password,
             });
@@ -184,8 +184,8 @@ describe('Test Auth Routes', () => {
             expect(res.body).toHaveProperty('token');
         });
 
-        it('Should not login with incorrect password', async () => {
-            const res = await request(app).post(loginPath).send({
+        it('Should not signin with incorrect password', async () => {
+            const res = await request(app).post(signinPath).send({
                 email: testUser.email,
                 password: 'wrongpassword',
             });
@@ -193,8 +193,8 @@ describe('Test Auth Routes', () => {
             expect(res.statusCode).toEqual(httpStatus.UNAUTHORIZED);
         });
 
-        it('Should not login a non-existent user', async () => {
-            const res = await request(app).post(loginPath).send({
+        it('Should not signin a non-existent user', async () => {
+            const res = await request(app).post(signinPath).send({
                 email: 'nouser@example.com',
                 password: 'password123',
             });
@@ -202,8 +202,8 @@ describe('Test Auth Routes', () => {
             expect(res.statusCode).toEqual(httpStatus.UNAUTHORIZED);
         });
 
-        it('Should return BAD_REQUEST for missing email in login', async () => {
-            const res = await request(app).post(loginPath).send({
+        it('Should return BAD_REQUEST for missing email in signin', async () => {
+            const res = await request(app).post(signinPath).send({
                 password: 'password123',
             });
 
@@ -211,8 +211,8 @@ describe('Test Auth Routes', () => {
             expect(res.body.message).toContain('required');
         });
 
-        it('Should return BAD_REQUEST for missing password in login', async () => {
-            const res = await request(app).post(loginPath).send({
+        it('Should return BAD_REQUEST for missing password in signin', async () => {
+            const res = await request(app).post(signinPath).send({
                 email: testUser.email,
             });
 
@@ -220,8 +220,8 @@ describe('Test Auth Routes', () => {
             expect(res.body.message).toContain('required');
         });
 
-        it('Should return BAD_REQUEST for empty email in login', async () => {
-            const res = await request(app).post(loginPath).send({
+        it('Should return BAD_REQUEST for empty email in signin', async () => {
+            const res = await request(app).post(signinPath).send({
                 email: '',
                 password: 'password123',
             });
@@ -230,8 +230,8 @@ describe('Test Auth Routes', () => {
             expect(res.body.message).toContain('empty');
         });
 
-        it('Should return BAD_REQUEST for empty password in login', async () => {
-            const res = await request(app).post(loginPath).send({
+        it('Should return BAD_REQUEST for empty password in signin', async () => {
+            const res = await request(app).post(signinPath).send({
                 email: testUser.email,
                 password: '',
             });
@@ -253,12 +253,12 @@ describe('Test Auth Routes', () => {
                 password: 'password123',
             };
 
-            await request(app).post('/auth/register').send(testUser);
-            const loginRes = await request(app).post('/auth/login').send({
+            await request(app).post('/auth/signup').send(testUser);
+            const signinRes = await request(app).post('/auth/signin').send({
                 email: testUser.email,
                 password: testUser.password,
             });
-            validToken = loginRes.body.token;
+            validToken = signinRes.body.token;
         });
 
         afterAll(async () => {

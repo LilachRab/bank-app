@@ -1,46 +1,46 @@
 import { Router } from 'express';
 import httpStatus from 'http-status-codes';
-import { register, login, logout } from '../controllers/authController';
-import { validateRegistration, validateLogin } from '../middleware/validationMiddleware';
+import { signup, signin, signout } from '../controllers/authController';
+import { validateSignup, validateSignin } from '../middleware/validationMiddleware';
 
 export const createAuthRouter = () => {
     const authRouter = Router();
 
     /**
      * @swagger
-     * /auth/register:
+     * /auth/signup:
      *   post:
-     *     summary: Register
+     *     summary: Signup
      *     tags: [Auth]
      *     responses:
      *       200:
-     *         description: User registered successfully
+     *         description: User signed up successfully
      */
-    authRouter.post('/register', validateRegistration, register);
+    authRouter.post('/signup', validateSignup, signup);
 
     /**
      * @swagger
-     * /auth/login:
+     * /auth/signin:
      *   post:
-     *     summary: Login
+     *     summary: Signin
      *     tags: [Auth]
      *     responses:
      *       200:
-     *         description: User logged in successfully
+     *         description: User signed in successfully
      */
-    authRouter.post('/login', validateLogin, login);
+    authRouter.post('/signin', validateSignin, signin);
 
     /**
      * @swagger
-     * /auth/logout:
+     * /auth/signout:
      *   post:
-     *     summary: Logout
+     *     summary: Signout
      *     tags: [Auth]
      *     responses:
      *       200:
-     *         description: User logged out successfully
+     *         description: User signed out successfully
      */
-    authRouter.post('/logout', logout);
+    authRouter.post('/signout', signout);
 
     return authRouter;
 };

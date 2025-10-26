@@ -1,22 +1,28 @@
 import { axiosInstance } from './axiosInstance';
+import type { CreateTransactionRequest } from '@/types/transaction';
+
+const getCurrentUser = async () => {
+    const response = await axiosInstance.get('/users/me');
+    return response.data;
+};
 
 export const api = {
     auth: {
-        login: async (email: string, password: string) => {
-            const response = await axiosInstance.post('/auth/login', { email, password });
+        signin: async (email: string, password: string) => {
+            const response = await axiosInstance.post('/auth/signin', { email, password });
             return response.data;
         },
         signup: async (fullName: string, email: string, password: string) => {
             const [firstName, lastName] = fullName.split(' ');
-            const response = await axiosInstance.post('/auth/register', { firstName, lastName, email, password });
+            const response = await axiosInstance.post('/auth/signup', { firstName, lastName, email, password });
             return response.data;
         },
-        logout: async () => {
-            return await axiosInstance.post('/auth/logout');
+        signout: async () => {
+            return await axiosInstance.post('/auth/signout');
         },
         checkAuth: async () => {
             try {
-                await axiosInstance.get('/auth/me');
+                await getCurrentUser();
                 return true;
             } catch (error) {
                 return false;
@@ -24,8 +30,8 @@ export const api = {
         },
     },
     transaction: {
-        makeTransaction: async (amount: number, receiverEmail: string) => {
-            const response = await axiosInstance.post('/transactions/create', { amount, receiverEmail });
+        makeTransaction: async (transactionData: CreateTransactionRequest) => {
+            const response = await axiosInstance.post('/transactions/create', transactionData);
             return response.data;
         },
         getTransactions: async () => {
@@ -35,8 +41,8 @@ export const api = {
     },
     user: {
         getUser: async () => {
-            const response = await axiosInstance.get('/users');
-            return response.data;
+            const response = await getCurrentUser();
+            return response;
         },
     },
 };

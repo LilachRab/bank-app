@@ -1,14 +1,14 @@
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { api } from '@/services/api';
+import axios from 'axios';
 import { Input } from './ui/input';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from './ui/form';
 import { SendMoneyButton } from './SendMoneyButton';
 import { Checkbox } from './ui/checkbox';
 import { useState } from 'react';
 import { Label } from './ui/label';
-import { type Transaction } from '@/types/transaction';
+import { type CreateTransactionRequest } from '@/types/transaction';
 import moneyFlies from '../assets/moneyFlies.png';
 
 const formSchema = z.object({
@@ -25,8 +25,9 @@ const formSchema = z.object({
 type TransactionFormValues = z.infer<typeof formSchema>;
 
 interface TransactionFormProps {
-    onSubmitSuccess?: (newTransaction?: Transaction) => void;
-    onTransactionError?: () => void;
+    createTransaction: (transactionData: CreateTransactionRequest) => Promise<string>;
+    onSubmitSuccess?: (message: string) => void;
+    onTransactionError?: (message: string) => void;
     buttonIcon?: React.ReactNode;
     buttonVariant?: 'default' | 'destructive';
     onTransactionStart?: () => void;
@@ -34,6 +35,7 @@ interface TransactionFormProps {
 }
 
 export const TransactionForm = ({
+    createTransaction,
     onSubmitSuccess,
     onTransactionError,
     buttonIcon,
@@ -52,33 +54,36 @@ export const TransactionForm = ({
     });
 
     const onSubmit = async (values: TransactionFormValues) => {
-        console.log('Form submitted with values:', values);
-        console.log('Is verified:', isVerified);
-        console.log('Form errors:', form.formState.errors);
-        
         if (!isVerified) {
-            console.log('Form submission blocked - verification not checked');
             return;
         }
         
         try {
-            // Start the transaction loading dialog
             onTransactionStart?.();
 
-            // Make the actual API call and get the created transaction
-            // const newTransaction = await api.transaction.makeTransaction(Number(values.amount), values.receiverEmail);
+            const transactionData: CreateTransactionRequest = {
+                transactionAmount: Number(values.amount),
+                receiverEmail: values.receiverEmail,
+            };
 
-            // Pass the new transaction to the parent component
-            // onSubmitSuccess?.(newTransaction);
+            const message = await createTransaction(transactionData);
+            onSubmitSuccess?.(message);
         } catch (error) {
             console.error('Transaction failed:', error);
-            // Call the error handler to show failure state
-            onTransactionError?.();
+            
+            let errorMessage = 'An unexpected error occurred. Please try again';
+
+            if (axios.isAxiosError(error) && error.response?.data?.message) {
+                errorMessage = error.response.data.message;
+            } else if (error instanceof Error && error.message) {
+                errorMessage = error.message;
+            }
+
+            onTransactionError?.(errorMessage);
         }
     };
 
     const handleFormSubmit = (e: React.FormEvent) => {
-        console.log('Form submit event triggered');
         e.preventDefault();
         form.handleSubmit(onSubmit)();
     };
@@ -169,7 +174,6 @@ export const TransactionForm = ({
                         icon={buttonIcon} 
                         variant={buttonVariant} 
                         disabled={!isVerified}
-                        onClick={() => console.log('SendMoneyButton clicked, isVerified:', isVerified)}
                     />
                 </div>
             </form>

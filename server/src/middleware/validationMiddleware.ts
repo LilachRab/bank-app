@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import httpStatus from 'http-status-codes';
 
-export const validateRegistration = (req: Request, res: Response, next: NextFunction) => {
+export const validateSignup = (req: Request, res: Response, next: NextFunction) => {
     const { email, firstName, lastName, password } = req.body;
 
     // Check for missing required fields (undefined or null)
@@ -36,7 +36,7 @@ export const validateRegistration = (req: Request, res: Response, next: NextFunc
     next();
 };
 
-export const validateLogin = (req: Request, res: Response, next: NextFunction) => {
+export const validateSignin = (req: Request, res: Response, next: NextFunction) => {
     const { email, password } = req.body;
 
     // Check for missing required fields (undefined or null)

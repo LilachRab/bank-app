@@ -7,6 +7,6 @@ export interface Transaction {
 }
 
 export interface CreateTransactionRequest {
-    amount: number;
+    transactionAmount: number;
     receiverEmail: string;
 }
