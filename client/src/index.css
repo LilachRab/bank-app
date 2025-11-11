@@ -2,6 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer utilities {
+    .bg-gradient-purple {
+        background: linear-gradient(90deg, #251c4a 0%, #553ca9 100%);
+    }
+}
+
 * {
     font-family: 'Roboto', sans-serif;
 }

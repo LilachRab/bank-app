@@ -33,8 +33,9 @@ export const signin = async (req: Request, res: Response) => {
 
     res.cookie('token', token, {
         httpOnly: true, // cannot be accessed by JS
-        secure: true, // only over HTTPS
-        sameSite: 'strict', // CSRF protection
+        secure: process.env.NODE_ENV === 'production', // only secure in production
+        sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax',
+        maxAge: 5 * 60 * 1000, // 5 minutes
     });
     res.status(httpStatus.OK).json({ token });
 };

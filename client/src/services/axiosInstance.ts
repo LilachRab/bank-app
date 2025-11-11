@@ -4,6 +4,7 @@ import { API_URL } from '../constants';
 export const axiosInstance = axios.create({
     baseURL: API_URL,
     withCredentials: true,
+    timeout: 10000, // 10 second timeout
 });
 
 // Response interceptor to handle errors gracefully
@@ -17,7 +18,8 @@ axiosInstance.interceptors.response.use(
                 // Silently reject for auth checks
                 return Promise.reject(error);
             }
-            console.error('Server connection error. Please ensure the server is running.');
+            console.error('Server connection error. Please ensure the server is running on http://localhost:3000');
+            console.error('Error details:', error.message);
         }
         return Promise.reject(error);
     }

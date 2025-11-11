@@ -153,6 +153,36 @@ describe('Test API Routes', () => {
             expect(res.statusCode).toEqual(httpStatus.BAD_REQUEST);
             expect(res.body.message).toContain('Invalid receiver email format');
         });
+
+        it('Should create a transaction with decimal amount (1 decimal place)', async () => {
+            const res = await request(app).post('/api/transactions/create').set('Cookie', `token=${senderToken}`).send({
+                receiverEmail: receiverEmail,
+                transactionAmount: 10.5,
+            });
+
+            expect(res.statusCode).toEqual(httpStatus.OK);
+            expect(res.body).toHaveProperty('message', 'Transaction created successfully');
+        });
+
+        it('Should create a transaction with decimal amount (2 decimal places)', async () => {
+            const res = await request(app).post('/api/transactions/create').set('Cookie', `token=${senderToken}`).send({
+                receiverEmail: receiverEmail,
+                transactionAmount: 25.99,
+            });
+
+            expect(res.statusCode).toEqual(httpStatus.OK);
+            expect(res.body).toHaveProperty('message', 'Transaction created successfully');
+        });
+
+        it('Should return BAD_REQUEST for more than 2 decimal places', async () => {
+            const res = await request(app).post('/api/transactions/create').set('Cookie', `token=${senderToken}`).send({
+                receiverEmail: receiverEmail,
+                transactionAmount: 10.123,
+            });
+
+            expect(res.statusCode).toEqual(httpStatus.BAD_REQUEST);
+            expect(res.body.message).toContain('more than 2 decimal places');
+        });
     });
 
     describe('GET /api/transactions', () => {

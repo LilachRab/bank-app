@@ -2,7 +2,7 @@ import { axiosInstance } from './axiosInstance';
 import type { CreateTransactionRequest } from '@/types/transaction';
 
 const getCurrentUser = async () => {
-    const response = await axiosInstance.get('/users/me');
+    const response = await axiosInstance.get('/api/users/me');
     return response.data;
 };
 
@@ -10,6 +10,10 @@ export const api = {
     auth: {
         signin: async (email: string, password: string) => {
             const response = await axiosInstance.post('/auth/signin', { email, password });
+
+            // Small delay to ensure cookie is set
+            await new Promise((resolve) => setTimeout(resolve, 100));
+
             return response.data;
         },
         signup: async (fullName: string, email: string, password: string) => {
@@ -31,11 +35,11 @@ export const api = {
     },
     transaction: {
         makeTransaction: async (transactionData: CreateTransactionRequest) => {
-            const response = await axiosInstance.post('/transactions/create', transactionData);
+            const response = await axiosInstance.post('/api/transactions/create', transactionData);
             return response.data;
         },
         getTransactions: async () => {
-            const response = await axiosInstance.get('/transactions');
+            const response = await axiosInstance.get('/api/transactions');
             return response.data;
         },
     },

@@ -140,7 +140,7 @@ export const TransactionDialog = ({ open, onOpenChange, createTransaction }: Tra
             onOpenChange={step === 'loading' || step === 'success' || step === 'failure' ? undefined : onOpenChange}
         >
             <DialogContent
-                className={`!transition-all !duration-300 !ease-in-out !data-[state=open]:animate-none !data-[state=closed]:animate-none !data-[state=open]:fade-in-0 !data-[state=closed]:fade-out-0 ${
+                className={`max-w-[95vw] sm:max-w-lg max-h-[90vh] overflow-y-auto !transition-all !duration-300 !ease-in-out !data-[state=open]:animate-none !data-[state=closed]:animate-none !data-[state=open]:fade-in-0 !data-[state=closed]:fade-out-0 ${
                     step === 'loading' || step === 'success' || step === 'failure' ? '[&>button]:!hidden' : ''
                 }`}
             >

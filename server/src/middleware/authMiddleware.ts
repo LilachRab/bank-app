@@ -4,6 +4,7 @@ import { isTokenBlacklisted, removeTokenFromBlacklist } from '../services/tokenB
 import { jwtService } from '../services/jwtService';
 import httpStatus from 'http-status-codes';
 import prisma from '../utils/prismaClient';
+import { userService } from '../services/userService';
 
 export const protectByToken = async (req: Request, res: Response, next: NextFunction) => {
     const token = req.cookies.token;
@@ -22,11 +23,12 @@ export const protectByToken = async (req: Request, res: Response, next: NextFunc
             return res.status(httpStatus.UNAUTHORIZED).json({ message: 'Not authorized, token failed' });
         }
 
-        const user = await prisma.user.findUnique({ where: { email: decodedToken.email } });
+        const user = await userService.getUserByEmail(decodedToken.email);
         if (!user) {
             return res.status(httpStatus.UNAUTHORIZED).json({ message: 'User not found' });
         }
-        req.body.user = user;
+
+        req.user = user;
 
         next();
     } catch (error) {

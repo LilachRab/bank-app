@@ -5,7 +5,7 @@ import { TransactionInput } from '../models/transaction';
 
 export const createTransaction = async (req: Request, res: Response) => {
     const transactionData: TransactionInput = req.body;
-    const sender = req.body.user;
+    const sender = req.user;
 
     if (!sender) {
         return res.status(httpStatus.UNAUTHORIZED).json({ message: 'Not authorized' });
@@ -29,10 +29,11 @@ export const createTransaction = async (req: Request, res: Response) => {
 };
 
 export const getAllTransactions = async (req: Request, res: Response) => {
-    const user = req.body.user;
+    const user = req.user;
     if (!user) {
         return res.status(httpStatus.UNAUTHORIZED).json({ message: 'Not authorized' });
     }
+
     const transactions = await transactionService.getUserTransactions(user.email);
     res.status(httpStatus.OK).json(transactions);
 };

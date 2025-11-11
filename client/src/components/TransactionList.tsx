@@ -9,7 +9,6 @@ import {
     PaginationNext,
     PaginationPrevious,
 } from '@/components/ui/pagination';
-import { PURPLE_GRADIENT_BG } from '@/constants';
 import type { Transaction as TransactionType } from '@/types/transaction';
 
 interface TransactionListProps {
@@ -39,7 +38,7 @@ export const TransactionList = ({ transactions, userEmail }: TransactionListProp
     return (
         <div className="mt-12 w-full max-w-6xl mx-auto">
             <Label className="text-gray-400 dark:text-gray-600 text-lg mb-4 text-left">Recent Transactions</Label>
-            <div className="rounded-xl shadow-md p-6" style={{ background: PURPLE_GRADIENT_BG }}>
+            <div className="rounded-xl shadow-md p-6 bg-gradient-purple">
                 <div className="rounded-lg overflow-hidden w-full">
                     {currentTransactions.length > 0 ? (
                         currentTransactions.map((transaction: TransactionType) => (

@@ -1,9 +1,9 @@
 import { Prisma } from '@prisma/client';
 import prisma from '../utils/prismaClient';
 import { TransactionInput } from '../models/transaction';
-import { User } from '../models/user';
+import { UserDetailsWithoutPassword } from '../models/user';
 
-const insertTransaction = async (sender: User, transactionData: TransactionInput) => {
+const insertTransaction = async (sender: UserDetailsWithoutPassword, transactionData: TransactionInput) => {
     const { receiverEmail, transactionAmount } = transactionData;
 
     // Validation checks
@@ -49,10 +49,10 @@ const insertTransaction = async (sender: User, transactionData: TransactionInput
     });
 };
 
-const getUserTransactions = async (email: string) => {
+const getUserTransactions = async (authenticatedUserEmail: string) => {
     return prisma.transaction.findMany({
         where: {
-            OR: [{ senderEmail: email }, { receiverEmail: email }],
+            OR: [{ senderEmail: authenticatedUserEmail }, { receiverEmail: authenticatedUserEmail }],
         },
         orderBy: {
             createdAt: 'desc',

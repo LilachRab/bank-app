@@ -1,21 +1,22 @@
+import { type FC, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { Header } from '@/components/Header';
 import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { PageTitle } from '@/components/ui/typography';
 import { AuthLayout } from '@/components/AuthLayout';
 import { api } from '@/services/api';
 import { OrSeparator } from '@/components/OrSeparator';
-import { GoogleIcon } from '@/components/GoogleIcon';
+import { GradientButton } from '@/components/GradientButton';
+import { GoogleSignInButton } from '@/components/GoogleSignInButton';
+import { extractErrorMessage } from '@/utils/errorHandler';
 import { toast } from 'sonner';
-import axios from 'axios';
 
 const formSchema = z.object({
-    email: z.string().email({
+    email: z.string().refine((val) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val), {
         message: 'Please enter a valid email address.',
     }),
     password: z.string().min(8, {
@@ -23,8 +24,11 @@ const formSchema = z.object({
     }),
 });
 
-export const Signin = () => {
+export const Signin: FC = () => {
     const navigate = useNavigate();
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+    
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -34,31 +38,33 @@ export const Signin = () => {
     });
 
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
+        setIsSubmitting(true);
         try {
             await api.auth.signin(values.email, values.password);
             toast.success('You logged in successfully');
             navigate('/dashboard');
         } catch (error) {
             console.error(error);
-            let errorMessage = 'An unexpected error occurred. Please try again.';
-
-            if (axios.isAxiosError(error) && error.response?.data?.message) {
-                errorMessage = error.response.data.message;
-            } else if (error instanceof Error && error.message) {
-                errorMessage = error.message;
-            }
-
+            const errorMessage = extractErrorMessage(error);
             toast.error('Signin failed', {
                 description: errorMessage,
             });
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
+    const handleGoogleSignin = async () => {
+        setIsGoogleLoading(true);
+        toast.info('Google sign-in coming soon');
+        // TODO: Implement Google OAuth flow
+        setTimeout(() => {
+            setIsGoogleLoading(false);
+        }, 1000);
+    };
+
     return (
-        <div
-            className="min-h-screen flex flex-col bg-gray-100 dark:bg-gray-900 dark:text-gray-100"
-            style={{ fontFamily: 'Roboto, sans-serif' }}
-        >
+        <div className="min-h-screen flex flex-col bg-gray-100 dark:bg-gray-900 dark:text-gray-100">
             <Header />
 
             {/* Body */}
@@ -96,29 +102,21 @@ export const Signin = () => {
                                 </FormItem>
                             )}
                         />
-                        <Button
-                            className="w-full text-white font-bold py-3 px-4 rounded-full shadow-lg transform transition-transform hover:scale-105"
-                            style={{
-                                background: 'linear-gradient(90deg, #2E2355 0%, #654DBB 100%)',
-                            }}
-                            type="submit"
-                        >
+                        <GradientButton isLoading={isSubmitting}>
                             Sign In
-                        </Button>
+                        </GradientButton>
 
                         <OrSeparator />
 
-                        <Button
-                            variant="outline"
-                            className="w-full flex items-center justify-center py-2 px-4 border hover:bg-gray-100 dark:hover:bg-gray-700"
-                        >
-                            <GoogleIcon className="h-5 w-5 mr-2" />
-                            Sign in with Google
-                        </Button>
+                        <GoogleSignInButton
+                            isLoading={isGoogleLoading}
+                            disabled={isSubmitting}
+                            onClick={handleGoogleSignin}
+                        />
 
                         <p className="mt-6 text-center text-sm text-gray-600 dark:text-gray-300">
                             Don't have an account?{' '}
-                            <Link className="font-medium text-blue-600 hover:text-blue-500" to="/signup">
+                            <Link className="font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400" to="/signup">
                                 Sign Up
                             </Link>
                         </p>

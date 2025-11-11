@@ -2,8 +2,9 @@ import prisma from '../utils/prismaClient';
 import { UserDto } from '../dtos/user.dto';
 import bcrypt from 'bcryptjs';
 import { BALANCE_MAX, BALANCE_MIN } from '../constants';
+import { UserDetailsWithoutPassword } from '../models/user';
 
-const getUserByEmail = (email: string) => {
+const getUserByEmail = async (email: string): Promise<UserDetailsWithoutPassword | null> => {
     return prisma.user.findUnique({
         where: { email },
         select: {

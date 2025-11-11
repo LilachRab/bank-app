@@ -11,6 +11,9 @@ import { Label } from './ui/label';
 import { type CreateTransactionRequest } from '@/types/transaction';
 import moneyFlies from '../assets/moneyFlies.png';
 
+const AMOUNT_REGEX = /^[1-9]\d*(\.\d{0,2})?$/;
+const AMOUNT_ERROR_MESSAGE = 'Amount must be a positive number with max 2 decimal places';
+
 const formSchema = z.object({
     receiverEmail: z
         .string()
@@ -19,7 +22,7 @@ const formSchema = z.object({
     amount: z
         .string()
         .min(1, 'Amount is required')
-        .regex(/^[1-9]\d*$/, 'Amount must be a positive number and cannot start with 0'),
+        .regex(AMOUNT_REGEX, AMOUNT_ERROR_MESSAGE),
 });
 
 type TransactionFormValues = z.infer<typeof formSchema>;
@@ -132,13 +135,13 @@ export const TransactionForm = ({
                                         className=" pr-8"
                                         onChange={(e) => {
                                             const { value } = e.target;
-                                            if (value === '' || /^\d+$/.test(value)) {
+                                            if (value === '' || AMOUNT_REGEX.test(value)) {
                                                 field.onChange(e);
                                                 form.clearErrors('amount');
                                             } else {
                                                 form.setError('amount', {
                                                     type: 'manual',
-                                                    message: 'Amount must contain numbers only',
+                                                    message: AMOUNT_ERROR_MESSAGE,
                                                 });
                                             }
                                         }}

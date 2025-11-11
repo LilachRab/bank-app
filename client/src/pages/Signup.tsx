@@ -1,3 +1,4 @@
+import { type FC, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -5,17 +6,16 @@ import { useForm } from 'react-hook-form';
 import { Header } from '@/components/Header';
 import { LegalDialogs } from '@/components/LegalDialogs';
 import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { PURPLE_GRADIENT_BG } from '@/constants';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Checkbox } from '@/components/ui/checkbox';
 import { PageTitle } from '@/components/ui/typography';
 import { AuthLayout } from '@/components/AuthLayout';
 import { api } from '@/services/api';
 import { OrSeparator } from '@/components/OrSeparator';
-import { GoogleIcon } from '@/components/GoogleIcon';
+import { GradientButton } from '@/components/GradientButton';
+import { GoogleSignInButton } from '@/components/GoogleSignInButton';
+import { extractErrorMessage } from '@/utils/errorHandler';
 import { toast } from 'sonner';
-import axios from 'axios';
 
 const formSchema = z.object({
     fullName: z.string().refine(
@@ -27,7 +27,7 @@ const formSchema = z.object({
             message: 'Please enter a valid full name - At least two letters for each name (Example: ac dc)',
         }
     ),
-    email: z.string().email({
+    email: z.string().refine((val) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val), {
         message: 'Please enter a valid email address.',
     }),
     password: z.string().min(8, {
@@ -38,8 +38,11 @@ const formSchema = z.object({
     }),
 });
 
-export const Signup = () => {
+export const Signup: FC = () => {
     const navigate = useNavigate();
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+    
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -51,31 +54,35 @@ export const Signup = () => {
     });
 
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
+        setIsSubmitting(true);
         try {
             await api.auth.signup(values.fullName, values.email, values.password);
+            await api.auth.signin(values.email, values.password);
+            
             toast.success('You signed up successfully');
             navigate('/dashboard');
         } catch (error) {
             console.error(error);
-            let errorMessage = 'An unexpected error occurred. Please try again.';
-
-            if (axios.isAxiosError(error) && error.response?.data?.message) {
-                errorMessage = error.response.data.message;
-            } else if (error instanceof Error && error.message) {
-                errorMessage = error.message;
-            }
-
+            const errorMessage = extractErrorMessage(error);
             toast.error('Signup failed', {
                 description: errorMessage,
             });
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
+    const handleGoogleSignin = async () => {
+        setIsGoogleLoading(true);
+        toast.info('Google sign-in coming soon');
+        // TODO: Implement Google OAuth flow
+        setTimeout(() => {
+            setIsGoogleLoading(false);
+        }, 1000);
+    };
+
     return (
-        <div
-            className="bg-gray-100 min-h-screen flex flex-col dark:bg-gray-900 dark:text-gray-100"
-            style={{ fontFamily: 'Roboto, sans-serif' }}
-        >
+        <div className="min-h-screen flex flex-col bg-gray-100 dark:bg-gray-900 dark:text-gray-100">
             <Header />
 
             <AuthLayout>
@@ -130,10 +137,10 @@ export const Signup = () => {
                                 <FormItem>
                                     <div className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 shadow">
                                         <FormControl>
-                                            <Checkbox checked={field.value} onCheckedChange={field.onChange} />
+                                            <Checkbox id="terms" checked={field.value} onCheckedChange={field.onChange} />
                                         </FormControl>
                                         <div className="space-y-1 leading-none">
-                                            <FormLabel>
+                                            <FormLabel htmlFor="terms">
                                                 I agree to the <LegalDialogs variant="combined" />
                                             </FormLabel>
                                         </div>
@@ -142,29 +149,21 @@ export const Signup = () => {
                                 </FormItem>
                             )}
                         />
-                        <Button
-                            className="w-full text-white font-bold py-3 px-4 rounded-full shadow-lg transform transition-transform hover:scale-105"
-                            style={{
-                                background: PURPLE_GRADIENT_BG,
-                            }}
-                            type="submit"
-                        >
+                        <GradientButton isLoading={isSubmitting}>
                             Signup
-                        </Button>
+                        </GradientButton>
 
                         <OrSeparator />
 
-                        <Button
-                            variant="outline"
-                            className="w-full flex items-center justify-center py-2 px-4 border hover:bg-gray-100 dark:hover:bg-gray-700"
-                        >
-                            <GoogleIcon className="h-5 w-5 mr-2" />
-                            Sign in with Google
-                        </Button>
+                        <GoogleSignInButton
+                            isLoading={isGoogleLoading}
+                            disabled={isSubmitting}
+                            onClick={handleGoogleSignin}
+                        />
 
                         <p className="mt-6 text-center text-sm text-gray-600 dark:text-gray-300">
                             Have an account?{' '}
-                            <Link className="font-medium text-blue-600 hover:text-blue-500" to="/signin">
+                            <Link className="font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400" to="/signin">
                                 Sign In
                             </Link>
                         </p>

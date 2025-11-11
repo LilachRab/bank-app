@@ -1,5 +1,5 @@
 import React from 'react';
-import gradientCopilot from '../assets/gradient-copilot.png';
+import abstractBg from '../assets/abstract-bg.svg';
 import { Card, CardContent } from '@/components/ui/card';
 
 interface AuthLayoutProps {
@@ -15,11 +15,7 @@ export const AuthLayout = ({ children }: AuthLayoutProps) => {
 
                 {/* form right side image */}
                 <div className="hidden md:block rounded-l-2xl overflow-hidden">
-                    <img
-                        alt="Abstract purple background"
-                        className="h-full w-full object-cover"
-                        src={gradientCopilot}
-                    />
+                    <img alt="Abstract purple background" className="h-full w-full object-cover" src={abstractBg} />
                 </div>
             </Card>
         </main>

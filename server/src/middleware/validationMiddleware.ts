@@ -94,5 +94,13 @@ export const validateTransaction = (req: Request, res: Response, next: NextFunct
         });
     }
 
+    // Validate decimal places (max 2 decimal places)
+    const decimalPlaces = (transactionAmount.toString().split('.')[1] || '').length;
+    if (decimalPlaces > 2) {
+        return res.status(httpStatus.BAD_REQUEST).json({
+            message: 'Transaction amount cannot have more than 2 decimal places',
+        });
+    }
+
     next();
 };

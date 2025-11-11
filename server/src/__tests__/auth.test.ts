@@ -56,7 +56,7 @@ describe('Test Auth Routes', () => {
             const res = await request(app).post(signupPath).send(testUser);
 
             expect(res.statusCode).toEqual(httpStatus.CREATED);
-            expect(res.body).toHaveProperty('message', 'User registered successfully');
+            expect(res.body).toHaveProperty('message', 'User signed up successfully');
         });
 
         it('Should not signup a user with an existing email and return BAD_REQUEST', async () => {
@@ -272,7 +272,7 @@ describe('Test Auth Routes', () => {
         });
 
         it('Should logout successfully with valid token', async () => {
-            const res = await request(app).post('/auth/logout').set('Cookie', `token=${validToken}`);
+            const res = await request(app).post('/auth/signout').set('Cookie', `token=${validToken}`);
 
             expect(res.statusCode).toEqual(httpStatus.OK);
             expect(res.body.message).toContain('successfully');

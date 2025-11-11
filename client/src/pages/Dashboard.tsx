@@ -2,7 +2,6 @@ import { useNavigate } from 'react-router-dom';
 import { api } from '@/services/api';
 import { Header } from '@/components/Header';
 import { LogOut } from 'lucide-react';
-import { PURPLE_GRADIENT_BG } from '@/constants';
 import { Button } from '@/components/ui/button';
 import { PageTitle } from '@/components/ui/typography';
 import { useState, useEffect } from 'react';
@@ -12,6 +11,7 @@ import { SendMoneyButton } from '@/components/SendMoneyButton';
 import type { Transaction } from '@/types/transaction';
 import type { User } from '@/types/user';
 import type { CreateTransactionRequest } from '@/types/transaction';
+import { toast } from 'sonner';
 
 export const Dashboard = () => {
     const navigate = useNavigate();
@@ -57,6 +57,7 @@ export const Dashboard = () => {
 
     const handleSignout = async () => {
         await api.auth.signout();
+        toast.success('You signed out successfully');
         navigate('/');
     };
 
@@ -67,11 +68,21 @@ export const Dashboard = () => {
     const createTransaction = async (transactionData: CreateTransactionRequest) => {
         const response = await api.transaction.makeTransaction(transactionData);
 
-        if (response) {
-            await getTransactions();
-        }
+        await Promise.all([getTransactions(), getUser()]);
 
         return response.message;
+    };
+
+    const formatCurrency = (amount: number) => {
+        const hasDecimal = amount % 1 !== 0;
+        const formatted = new Intl.NumberFormat('he-IL', {
+            style: 'currency',
+            currency: 'ILS',
+            minimumFractionDigits: hasDecimal ? 2 : 0,
+            maximumFractionDigits: 2,
+        }).format(amount);
+
+        return formatted;
     };
 
     return (
@@ -80,10 +91,10 @@ export const Dashboard = () => {
                 rightContent={
                     <Button
                         onClick={handleSignout}
-                        className="flex items-center text-sm font-medium text-white transform transition-transform hover:scale-105"
-                        style={{ background: PURPLE_GRADIENT_BG }}
+                        variant="destructive"
+                        className="flex items-center text-sm font-medium text-white transform transition-transform hover:scale-105 gap-2 bg-gradient-purple"
                     >
-                        <LogOut className="h-4 w-4 mr-2" />
+                        <LogOut className="h-4 w-4" />
                         Sign out
                     </Button>
                 }
@@ -95,9 +106,8 @@ export const Dashboard = () => {
                     Welcome {user.firstName} {user.lastName}
                 </PageTitle>
                 <p className="mt-2 text-gray-500 dark:text-gray-400">Your balance</p>
-                <div className="mt-4 text-6xl font-bold text-gray-800 dark:text-gray-50 flex items-center justify-center">
-                    {user.balance.toLocaleString()}
-                    <span className="mr-4 ml-2">₪</span>
+                <div className="mt-4 text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-800 dark:text-gray-50 flex items-center justify-center">
+                    {formatCurrency(user.balance)}
                 </div>
                 <SendMoneyButton className="mt-8" onClick={handleSendMoneyClick} />
                 <TransactionDialog
