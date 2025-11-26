@@ -1,9 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
-import { TransactionForm } from '@/components/TransactionForm';
-import { TransactionLoading } from '@/components/TransactionLoading';
-import { TransactionSuccess } from '@/components/TransactionSuccess';
-import { TransactionFailure } from '@/components/TransactionFailure';
+import { TransactionForm } from '@/components/Transaction/TransactionForm';
+import { TransactionLoading } from '@/components/Transaction/TransactionLoading';
+import { TransactionSuccess } from '@/components/Transaction/TransactionSuccess';
+import { TransactionFailure } from '@/components/Transaction/TransactionFailure';
 import { LockKeyhole } from 'lucide-react';
 import type { CreateTransactionRequest } from '@/types/transaction';
 

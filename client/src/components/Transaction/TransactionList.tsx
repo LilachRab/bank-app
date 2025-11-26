@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Label } from '@/components/ui/label';
-import { Transaction } from '@/components/Transaction';
+import { Transaction } from '@/components/Transaction/Transaction';
 import {
     Pagination,
     PaginationContent,

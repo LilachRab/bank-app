@@ -1,10 +1,10 @@
-import { type FC } from 'react';
-import { Link } from 'react-router-dom';
+import { FeatureCard } from '@/components/FeatureCard';
 import { Header } from '@/components/Header';
-import { ArrowRightLeft, SquareChartGantt } from 'lucide-react';
 import { LegalDialogs } from '@/components/LegalDialogs';
 import { Button } from '@/components/ui/button';
-import { FeatureCard } from '@/components/FeatureCard';
+import { ArrowRightLeft, SquareChartGantt } from 'lucide-react';
+import { type FC } from 'react';
+import { Link } from 'react-router-dom';
 
 interface Feature {
     icon: typeof SquareChartGantt | typeof ArrowRightLeft;

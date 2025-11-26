@@ -1,8 +1,9 @@
 import { Request, Response } from 'express';
 import httpStatus from 'http-status-codes';
+import { SigninDto, UserDto } from '../dtos/user.dto';
+import { CustomError } from '../errors/CustomError';
 import { authService } from '../services/authService';
 import { jwtService } from '../services/jwtService';
-import { UserDto, SigninDto } from '../dtos/user.dto';
 import { addTokenToBlacklist } from '../services/tokenBlacklistService';
 
 export const signup = async (req: Request, res: Response) => {
@@ -14,10 +15,10 @@ export const signup = async (req: Request, res: Response) => {
         const errorMessage = error instanceof Error ? error.message : 'Signup failed';
 
         if (errorMessage.includes('already exists')) {
-            return res.status(httpStatus.BAD_REQUEST).json({ message: errorMessage });
+            throw new CustomError(errorMessage, httpStatus.BAD_REQUEST);
         }
 
-        res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ message: errorMessage });
+        throw new CustomError(errorMessage, httpStatus.INTERNAL_SERVER_ERROR);
     }
 };
 
@@ -33,9 +34,9 @@ export const signin = async (req: Request, res: Response) => {
 
     res.cookie('token', token, {
         httpOnly: true, // cannot be accessed by JS
-        secure: process.env.NODE_ENV === 'production', // only secure in production
-        sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax',
-        maxAge: 5 * 60 * 1000, // 5 minutes
+        secure: true, // For development, the secure requirement can be temporarily bypassed
+        sameSite: 'none',
+        maxAge: 10 * 60 * 1000, // 10 minutes (in milliseconds)
     });
     res.status(httpStatus.OK).json({ token });
 };

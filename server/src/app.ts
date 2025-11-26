@@ -1,10 +1,11 @@
+import cookieParser from 'cookie-parser';
+import cors from 'cors';
 import express from 'express';
 import 'express-async-errors';
-import cors from 'cors';
-import { setupSwagger } from './swagger';
-import { routes } from './routes';
 import { errorHandler } from './middleware/errorMiddleware';
-import cookieParser from 'cookie-parser';
+import { routes } from './routes';
+import { setupSwagger } from './swagger';
+
 const app = express();
 
 app.use(

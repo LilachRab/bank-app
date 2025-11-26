@@ -1,16 +1,16 @@
-import { useNavigate } from 'react-router-dom';
-import { api } from '@/services/api';
 import { Header } from '@/components/Header';
-import { LogOut } from 'lucide-react';
+import { SendMoneyButton } from '@/components/SendMoneyButton';
+import { TransactionDialog, TransactionList } from '@/components/Transaction';
 import { Button } from '@/components/ui/button';
 import { PageTitle } from '@/components/ui/typography';
-import { useState, useEffect } from 'react';
-import { TransactionList } from '@/components/TransactionList';
-import { TransactionDialog } from '@/components/TransactionDialog';
-import { SendMoneyButton } from '@/components/SendMoneyButton';
-import type { Transaction } from '@/types/transaction';
+import { api } from '@/services/api';
+import { socket } from '@/sockets/socket';
+import type { CreateTransactionRequest, Transaction } from '@/types/transaction';
 import type { User } from '@/types/user';
-import type { CreateTransactionRequest } from '@/types/transaction';
+import { formatCurrency } from '@/utils/formatters';
+import { LogOut } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
 export const Dashboard = () => {
@@ -53,10 +53,20 @@ export const Dashboard = () => {
     useEffect(() => {
         getUser();
         getTransactions();
+
+        socket.on('money_received', handleMoneyReceived);
+
+        return () => {
+            socket.off('money_received', handleMoneyReceived);
+        };
     }, []);
 
     const handleSignout = async () => {
         await api.auth.signout();
+
+        sessionStorage.removeItem('socketToken');
+        socket.disconnect();
+
         toast.success('You signed out successfully');
         navigate('/');
     };
@@ -65,24 +75,36 @@ export const Dashboard = () => {
         setIsTransactionDialogOpen(true);
     };
 
+    const handleMoneyReceived = (transaction: Transaction) => {
+        if (transaction) {
+            setTransactions((prev) => [transaction, ...prev]);
+            setUser((prev) => ({
+                ...prev,
+                balance: prev.balance + transaction.amount,
+            }));
+        }
+    };
+
+    const handleMoneySent = (transaction: Transaction) => {
+        if (transaction) {
+            setTransactions((prev) => [transaction, ...prev]);
+            setUser((prev) => ({
+                ...prev,
+                balance: prev.balance - transaction.amount,
+            }));
+        }
+    };
+
     const createTransaction = async (transactionData: CreateTransactionRequest) => {
         const response = await api.transaction.makeTransaction(transactionData);
 
-        await Promise.all([getTransactions(), getUser()]);
+        // await Promise.all([getTransactions(), getUser()]);
+
+        if (response.transaction) {
+            handleMoneySent(response.transaction);
+        }
 
         return response.message;
-    };
-
-    const formatCurrency = (amount: number) => {
-        const hasDecimal = amount % 1 !== 0;
-        const formatted = new Intl.NumberFormat('he-IL', {
-            style: 'currency',
-            currency: 'ILS',
-            minimumFractionDigits: hasDecimal ? 2 : 0,
-            maximumFractionDigits: 2,
-        }).format(amount);
-
-        return formatted;
     };
 
     return (

@@ -1,5 +1,7 @@
 import { Prisma } from '@prisma/client';
+import httpStatus from 'http-status-codes';
 import prisma from '../utils/prismaClient';
+import { CustomError } from '../errors/CustomError';
 import { TransactionInput } from '../models/transaction';
 import { UserDetailsWithoutPassword } from '../models/user';
 
@@ -8,7 +10,7 @@ const insertTransaction = async (sender: UserDetailsWithoutPassword, transaction
 
     // Validation checks
     if (sender.email === receiverEmail) {
-        throw new Error('You cannot send money to yourself');
+        throw new CustomError('You cannot send money to yourself', httpStatus.BAD_REQUEST);
     }
 
     return prisma.$transaction(async (prismaTransactionClient: Prisma.TransactionClient) => {
@@ -18,12 +20,12 @@ const insertTransaction = async (sender: UserDetailsWithoutPassword, transaction
         });
 
         if (!receiver) {
-            throw new Error('Receiver not found');
+            throw new CustomError('Receiver not found', httpStatus.NOT_FOUND);
         }
 
         // 2. Check sender's balance
         if (sender.balance < transactionAmount) {
-            throw new Error("You don't have enough money");
+            throw new CustomError("You don't have enough money", httpStatus.BAD_REQUEST);
         }
 
         // 3. Update sender's balance
@@ -39,7 +41,7 @@ const insertTransaction = async (sender: UserDetailsWithoutPassword, transaction
         });
 
         // 5. Create the transaction record
-        await prismaTransactionClient.transaction.create({
+        return await prismaTransactionClient.transaction.create({
             data: {
                 amount: transactionAmount,
                 senderEmail: sender.email,

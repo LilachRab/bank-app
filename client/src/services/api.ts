@@ -1,5 +1,6 @@
-import { axiosInstance } from './axiosInstance';
+import { socket } from '@/sockets/socket';
 import type { CreateTransactionRequest } from '@/types/transaction';
+import { axiosInstance } from './axiosInstance';
 
 const getCurrentUser = async () => {
     const response = await axiosInstance.get('/api/users/me');
@@ -10,9 +11,12 @@ export const api = {
     auth: {
         signin: async (email: string, password: string) => {
             const response = await axiosInstance.post('/auth/signin', { email, password });
+            const { token } = response.data;
 
-            // Small delay to ensure cookie is set
-            await new Promise((resolve) => setTimeout(resolve, 100));
+            sessionStorage.setItem('socketToken', token);
+
+            socket.auth = { token };
+            socket.connect();
 
             return response.data;
         },
@@ -22,7 +26,10 @@ export const api = {
             return response.data;
         },
         signout: async () => {
-            return await axiosInstance.post('/auth/signout');
+            await axiosInstance.post('/auth/signout');
+
+            sessionStorage.removeItem('socketToken');
+            socket.disconnect();
         },
         checkAuth: async () => {
             try {

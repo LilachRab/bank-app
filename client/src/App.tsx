@@ -4,8 +4,11 @@ import { Dashboard } from './pages/Dashboard';
 import { Home } from './pages/Home';
 import { Signup } from './pages/Signup';
 import { Signin } from './pages/Signin';
+import { useSocket } from './hooks/useSocket';
 
 export const App = () => {
+    useSocket();
+
     return (
         <Routes>
             <Route path="/" element={<Home />} />

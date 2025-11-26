@@ -1,5 +1,5 @@
+import { FormattedEmail } from '@/components/FormattedEmail';
 import React from 'react';
-import { FormattedEmail } from './FormattedEmail';
 
 export interface TransactionProps {
     date: string;
@@ -22,15 +22,15 @@ const labelStyles = {
 
 const sectionStyles = {
     base: 'text-sm flex items-center min-w-0',
-    mobile: 'sm:w-1/4',
-    amount: 'sm:w-1/4 text-sm flex items-center sm:justify-end min-w-0',
+    mobile: 'sm:flex-1 sm:w-0',
+    amount: 'sm:w-auto sm:flex-shrink-0 text-sm flex items-center sm:justify-end min-w-0',
 };
 
 const textStyles = {
     content: 'text-gray-100 text-xs sm:text-sm',
     date: 'text-gray-200 text-xs sm:text-sm',
     amount: {
-        base: 'font-semibold whitespace-nowrap sm:text-right sm:w-20',
+        base: 'font-semibold whitespace-nowrap sm:text-right min-w-[5rem]',
         positive: 'text-green-400',
         negative: 'text-red-500',
     },

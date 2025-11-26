@@ -1,7 +1,8 @@
 import { Request, Response } from 'express';
 import httpStatus from 'http-status-codes';
-import { transactionService } from '../services/transactionService';
 import { TransactionInput } from '../models/transaction';
+import { transactionService } from '../services/transactionService';
+import { getIO } from '../sockets';
 
 export const createTransaction = async (req: Request, res: Response) => {
     const transactionData: TransactionInput = req.body;
@@ -11,21 +12,10 @@ export const createTransaction = async (req: Request, res: Response) => {
         return res.status(httpStatus.UNAUTHORIZED).json({ message: 'Not authorized' });
     }
 
-    try {
-        await transactionService.insertTransaction(sender, transactionData);
-        res.status(httpStatus.OK).json({ message: 'Transaction created successfully' });
-    } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : 'Transaction failed';
+    const transaction = await transactionService.insertTransaction(sender, transactionData);
+    res.status(httpStatus.OK).json({ message: 'Transaction created successfully', transaction: transaction });
 
-        let statusCode = httpStatus.INTERNAL_SERVER_ERROR;
-        if (errorMessage.includes('not found')) {
-            statusCode = httpStatus.NOT_FOUND;
-        } else if (errorMessage.includes('enough money') || errorMessage.includes('yourself')) {
-            statusCode = httpStatus.BAD_REQUEST;
-        }
-
-        res.status(statusCode).json({ message: errorMessage });
-    }
+    getIO().to(transactionData.receiverEmail).emit('money_received', transaction);
 };
 
 export const getAllTransactions = async (req: Request, res: Response) => {

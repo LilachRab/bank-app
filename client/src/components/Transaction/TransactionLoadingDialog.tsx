@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Check } from 'lucide-react';
-import { Button } from './ui/button';
-import { Progress } from './ui/progress';
-import { Spinner } from './ui/shadcn-io/spinner';
+import { Button } from '@/components/ui/button';
+import { Progress } from '@/components/ui/progress';
+import { Spinner } from '@/components/ui/shadcn-io/spinner';
 
 interface TransactionLoadingDialogProps {
     isOpen: boolean;

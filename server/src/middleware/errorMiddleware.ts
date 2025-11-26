@@ -1,17 +1,13 @@
 import { Request, Response, NextFunction } from 'express';
 import httpStatus from 'http-status-codes';
+import { CustomError } from '../errors/CustomError';
 
-interface AppError extends Error {
-    statusCode?: number;
-    isOperational?: boolean;
-}
+export const errorHandler = (err: CustomError, req: Request, res: Response, _next: NextFunction) => {
+    const statusCode = err.statusCode || httpStatus.INTERNAL_SERVER_ERROR;
+    const message = err.message || 'Something went wrong';
 
-export const errorHandler = (err: AppError, req: Request, res: Response, _next: NextFunction) => {
-    err.statusCode = err.statusCode || httpStatus.INTERNAL_SERVER_ERROR;
-    err.message = err.message || 'Something went wrong';
-
-    res.status(err.statusCode).json({
+    res.status(statusCode).json({
         success: false,
-        message: err.message,
+        message,
     });
 };

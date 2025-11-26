@@ -1,21 +1,21 @@
-import { type FC, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { z } from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
+import { AuthLayout } from '@/components/AuthLayout';
+import { GoogleSignInButton } from '@/components/GoogleSignInButton';
+import { GradientButton } from '@/components/GradientButton';
 import { Header } from '@/components/Header';
 import { LegalDialogs } from '@/components/LegalDialogs';
-import { Input } from '@/components/ui/input';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Checkbox } from '@/components/ui/checkbox';
-import { PageTitle } from '@/components/ui/typography';
-import { AuthLayout } from '@/components/AuthLayout';
-import { api } from '@/services/api';
 import { OrSeparator } from '@/components/OrSeparator';
-import { GradientButton } from '@/components/GradientButton';
-import { GoogleSignInButton } from '@/components/GoogleSignInButton';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { PageTitle } from '@/components/ui/typography';
+import { api } from '@/services/api';
 import { extractErrorMessage } from '@/utils/errorHandler';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { type FC, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
+import { z } from 'zod';
 
 const formSchema = z.object({
     fullName: z.string().refine(
